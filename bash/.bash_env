@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Enable CCACHE for quick clean builds
+export USE_CCACHE=1
+export CCACHE_DIR=/home/MAGICLEAP/bwood/build_data/ccache
+
+export ANDROID_BUILD_TOP=/home/MAGICLEAP/bwood/build_data/nova
+
+# Add stuff to path
+export PATH=$PATH:/home/MAGICLEAP/bwood/bin:/home/MAGICLEAP/bwood/build_data/nova/out/host/linux-x86/bin
+
+export DISPLAY=:0
