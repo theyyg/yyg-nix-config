@@ -9,4 +9,10 @@ export ANDROID_BUILD_TOP=/home/MAGICLEAP/bwood/build_data/nova
 # Add stuff to path
 export PATH=$PATH:/home/MAGICLEAP/bwood/bin:/home/MAGICLEAP/bwood/build_data/nova/out/host/linux-x86/bin
 
-export DISPLAY=:0
+# if not defined
+if [ -n "$DISPLAY" ]
+   export DISPLAY=:0
+fi
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
