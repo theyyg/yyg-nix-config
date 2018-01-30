@@ -11,6 +11,7 @@ export PATH=$PATH:/home/MAGICLEAP/bwood/bin:/home/MAGICLEAP/bwood/build_data/nov
 
 # if not defined
 if [ -n "$DISPLAY" ]
+then
    export DISPLAY=:0
 fi
 
