@@ -5,15 +5,18 @@ export USE_CCACHE=1
 export CCACHE_DIR=/home/MAGICLEAP/bwood/build_data/ccache
 
 export ANDROID_BUILD_TOP=/home/MAGICLEAP/bwood/build_data/nova
+export NOVA_FRESH_BUILD=/home/MAGICLEAP/bwood/build_data/nova/out/target/product/phaedra
+export AUDIOSRV=/home/MAGICLEAP/bwood/build_data/nova/nova/frameworks/services/audioservice
+export ANDROID_PRODUCT_OUT=$NOVA_FRESH_BUILD
 
 # Add stuff to path
 export PATH=$PATH:/home/MAGICLEAP/bwood/bin:/home/MAGICLEAP/bwood/build_data/nova/out/host/linux-x86/bin
 
 # if not defined
-#if [ -n "$DISPLAY" ]
-#then
-export DISPLAY=:0
-#fi
+if [ -n "$DISPLAY" ];
+then
+    export DISPLAY=:0
+fi
 
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'

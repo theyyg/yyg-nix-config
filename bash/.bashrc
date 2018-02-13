@@ -115,7 +115,17 @@ if ! shopt -oq posix; then
 fi
 
 # Environment Variables
-
 if [ -f ~/.bash_env ]; then
     . ~/.bash_env
 fi
+
+# Magic bash execution
+if [ -f ~/.bash_magic ]; then
+    . ~/.bash_magic
+fi
+
+# Custom bash execution
+if [ -f ~/.bash_custom ]; then
+    . ~/.bash_custom
+fi
+
