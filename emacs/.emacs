@@ -6,4 +6,3 @@
 (setq load-path
       (cons (condition-case () (expand-file-name "~/emacs") (error nil) )
             load-path) )
-
