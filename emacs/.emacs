@@ -6,3 +6,7 @@
 (setq load-path
       (cons (condition-case () (expand-file-name "~/emacs") (error nil) )
             load-path) )
+
+;; Keep my customizations in a file separate from the .emacs file.
+(setq sandbox-file "~/.emacs-sandbox.el")
+(load sandbox-file)
