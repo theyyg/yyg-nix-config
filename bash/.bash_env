@@ -12,7 +12,7 @@ export PATH=$PATH:/home/MAGICLEAP/bwood/bin:/home/MAGICLEAP/bwood/build_data/nov
 # if not defined
 if [ -n "$DISPLAY" ]
 then
-   export DISPLAY=:0
+   export DISPLAY=127.0.0.1:0
 fi
 
 # colored GCC warnings and errors
