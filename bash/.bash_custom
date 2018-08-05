@@ -1,0 +1,7 @@
+#!/bin/bash
+# This is the last bash file to be executed in bashrc
+
+# swap the caps-lock and ctrl keys on the keyboard
+setxkbmap -layout us -option ctrl:swapcaps
+#setxkbmap -layout us -option ctrl:nocaps
+setxkbmap -layout us -option altwin:swap_lalt_lwin
