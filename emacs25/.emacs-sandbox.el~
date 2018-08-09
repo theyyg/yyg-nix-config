@@ -1,0 +1,224 @@
+;; emacs built-in backup settings
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.saves"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)       ; use versioned backups
+
+;; Delete old copies
+(message "Deleting old backup files...")
+(let ((week (* 60 60 24 7))
+      (current (float-time (current-time))))
+  (dolist (file (directory-files temporary-file-directory t))
+    (when (and (backup-file-name-p file)
+               (> (- current (float-time (fifth (file-attributes file))))
+                  week))
+      (message "%s" file)
+      (delete-file file))))
+
+;; Yes and No from http://aaronbedra.com/emacs.d/
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Scroll bar, Tool bar, Menu bar from http://aaronbedra.com/emacs.d/
+(scroll-bar-mode -1)
+;;(tool-bar-mode -1)
+;;(menu-bar-mode -1)
+
+;; Marking and Selecting from http://aaronbedra.com/emacs.d/
+(delete-selection-mode t)
+(transient-mark-mode t)
+(setq x-select-enable-clipboard t)
+
+;; Display Settings from http://aaronbedra.com/emacs.d/
+(setq-default indicate-empty-lines t)
+(when (not indicate-empty-lines)
+  (toggle-indicate-empty-lines))
+
+;; Indentation from http://aaronbedra.com/emacs.d/
+(setq tab-width 4
+      indent-tabs-mode nil)
+
+;; Key bindings from http://aaronbedra.com/emacs.d/
+(global-set-key (kbd "C-;") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "C-c C-k") 'compile)
+
+;; Keystroke echo from http://aaronbedra.com/emacs.d/
+(setq echo-keystrokes 0.1
+      use-dialog-box nil
+      visible-bell t)
+(show-paren-mode t)
+
+
+;; C++ indenting stuff
+(defun my-c-mode-common-hook ()
+  ;; (setq c-default-style "bsd" c-basic-offset 4)
+
+  ;; my customizations for all of c-mode, c++-mode, objc-mode, java-mode
+  (c-set-offset 'substatement-open 0)
+  ;; other customizations can go here
+
+  (setq c++-tab-always-indent t)
+  (setq c-basic-offset 4)                  ;; Default is 2
+  (setq c-indent-level 4)                  ;; Default is 2
+
+  (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60))
+  (setq tab-width 4)
+  (setq indent-tabs-mode nil)  ; use spaces only if nil
+  )
+
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+
+
+;; Show column of cursor
+(setq column-number-mode t)
+
+
+;; Quick window switching
+(global-set-key (kbd "C-.") #'other-window)
+(global-set-key (kbd "C-,") #'prev-window)
+
+(defun prev-window ()
+  (interactive)
+  (other-window -1))
+
+(global-set-key (kbd "M-o") 'ace-window)
+
+
+;; Powerline / telephone-line
+;; Install from melpa
+;;(require 'telephone-line)
+;;(telephone-line-mode 1)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup from https://wiki.magicleap.com/pages/viewpage.action?pageId=79998952
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PACKAGE SOURCES
+(require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives
+         '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+ 
+;; bootstrap 'use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+ 
+ 
+;; C/C++
+(use-package flymake-cursor
+  :ensure t)
+(use-package flymake-google-cpplint
+  :ensure t
+  :init
+  :config
+  (add-hook 'c-mode-hook 'flymake-google-cpplint-load)
+  (add-hook 'c++-mode-hook 'flymake-google-cpplint-load)
+  (custom-set-variables
+   ;; MacOS
+   ;; '(flymake-google-cpplint-command "/System/Library/Frameworks/Python.framework/Versions/2.7/bin/cpplint")
+   ;; Linux
+   '(flymake-google-cpplint-command "/usr/local/bin/cpplint")
+   '(flymake-google-cpplint-verbose "--verbose=0")
+   ;; Note that I've turned off build rules. May want those on, e.g. +build/include
+   '(flymake-google-cpplint-filter "--filter=-whitespace/line_length,-build")))
+ 
+(use-package google-c-style
+  :ensure t
+  :init
+  (add-hook 'c-mode-common-hook 'google-set-c-style)
+  (add-hook 'c-mode-common-hook 'google-make-newline-indent))
+ 
+;; gdb configuration
+(setq gdb-many-windows t
+      gdb-show-main t)
+ 
+(use-package realgud
+  :ensure t
+  :commands (realgud:gdb
+         realgud:ipdb
+         realgud:pdb))
+ 
+;; additional cpp file extensions
+(add-hook 'after-init-hook
+      (function (lambda()
+              (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+              (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
+              (add-to-list 'auto-mode-alist '("\\.inc\\'" . c++-mode))
+              (add-to-list 'auto-mode-alist '("\\.cc\\'" . c++-mode))
+              )))
+ 
+;; clang-format can be triggered using C-c C-f
+(use-package clang-format
+  :ensure
+  :config
+  (global-set-key (kbd "C-c C-f") 'clang-format-region))
+ 
+ 
+;; CQUERY SETUP
+(use-package lsp-mode
+  :ensure t
+  :defer t
+  :config (progn
+        ;; (require 'lsp-flycheck)
+        (set-face-attribute 'lsp-face-highlight-textual nil
+                :background "#666" :foreground "#ffffff")))
+ 
+;; (with-eval-after-load 'projectile
+;; (setq projectile-project-root-files-top-down-recurring
+;; (append '("compile_commands.json"
+;; ".cquery")
+;; projectile-project-root-files-top-down-recurring)))
+ 
+(defun cquery//enable ()
+  (condition-case nil
+      (lsp-cquery-enable)
+    (user-error nil)))
+ 
+(use-package cquery
+  :ensure t
+ 
+  :commands lsp-cquery-enable
+  :init (add-hook 'c-mode-common-hook #'cquery//enable))
+ 
+;; setup as needed for your env/projects
+(setq cquery-project-roots '("~/repo" )) ;; <======== Location of your ML code
+;; (setq cquery-executable "/usr/local/bin/cquery")
+(setq cquery-extra-args '("--log-file=/tmp/cq.log"))
+(setq cquery-cache-dir "~/.cache/cquery_cached_index")
+ 
+;; initialization options
+(setq cquery-extra-init-params '(:index (:blacklist (".*/vendor/nvidia/.*" ".*\.s")) :diagnostics (:blacklist (".*\.s"))))
+ 
+;; company-lsp
+(use-package company-lsp
+  :ensure t
+  :init (global-company-mode)
+  :config
+  (progn
+    (push 'company-lsp company-backends)))
+
+;; Doom themes
+(require 'doom-themes)
+
+;; Global settings (defaults)
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+;; may have their own settings.
+(load-theme 'doom-one t)
+
+;; Enable flashing mode-line on errors
+(doom-themes-visual-bell-config)
+
+;; Enable custom neotree theme
+(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+
+;; Corrects (and improves) org-mode's native fontification.
+(doom-themes-org-config)

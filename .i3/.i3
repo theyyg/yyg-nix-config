@@ -1,0 +1,1 @@
+/home/MAGICLEAP/bwood/opt/yyg-nix-config/.i3
