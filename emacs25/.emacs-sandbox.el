@@ -93,28 +93,74 @@
 
 ;; Powerline / telephone-line
 ;; Install from melpa
-;;(require 'telephone-line)
-;;(telephone-line-mode 1)
+(require 'telephone-line)
+(telephone-line-mode 1)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Doom themes
-;;(require 'doom-themes)
+(require 'doom-themes)
 
 ;; Global settings (defaults)
-;;(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-;;      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t) ; if nil, italics is universally disabled
 
 ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
 ;; may have their own settings.
-;;(load-theme 'doom-one t)
+(load-theme 'doom-one t)
 
 ;; Enable flashing mode-line on errors
-;;(doom-themes-visual-bell-config)
+(doom-themes-visual-bell-config)
 
 ;; Enable custom neotree theme
-;;(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
 
 ;; Corrects (and improves) org-mode's native fontification.
-;;(doom-themes-org-config)
+(doom-themes-org-config)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+										; Package specific config
+										; Config taken from [https://emacs.cafe/emacs/javascript/setup/2017/04/23/emacs-setup-javascript.html]
+										; Js2-mode
+(require 'js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+;; Better imenu
+(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+
+										; js2-refactor
+										; xref-js2
+(require 'js2-refactor)
+(require 'xref-js2)
+
+(add-hook 'js2-mode-hook #'js2-refactor-mode)
+(js2r-add-keybindings-with-prefix "C-c C-r")
+(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
+;; unbind it.
+(define-key js-mode-map (kbd "M-.") nil)
+
+(add-hook 'js2-mode-hook (lambda ()
+  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+
+;; javascript friendly kill
+(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+										; company-tern
+										; config from [https://emacs.cafe/emacs/javascript/setup/2017/05/09/emacs-setup-javascript-2.html]
+(require 'company)
+(require 'company-tern)
+
+(add-to-list 'company-backends 'company-tern)
+(add-hook 'js2-mode-hook (lambda ()
+                           (tern-mode)
+                           (company-mode)))
+                           
+;; Disable completion keybindings, as we use xref-js2 instead
+(define-key tern-mode-keymap (kbd "M-.") nil)
+(define-key tern-mode-keymap (kbd "M-,") nil)
+
