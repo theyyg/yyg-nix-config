@@ -38,7 +38,7 @@
   (toggle-indicate-empty-lines))
 
 ;; Indentation from http://aaronbedra.com/emacs.d/
-(setq tab-width 2
+(setq tab-width 4
       indent-tabs-mode nil)
 
 ;; Key bindings from http://aaronbedra.com/emacs.d/
@@ -71,10 +71,10 @@
   (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60))
   (setq tab-width 4)
   (setq indent-tabs-mode nil)  ; use spaces only if nil
+  (hl-line-mode t)
   )
 
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
-
 
 ;; Show column of cursor
 (setq column-number-mode t)
@@ -90,31 +90,60 @@
 
 (global-set-key (kbd "M-o") 'ace-window)
 
+(add-hook 'c-mode-hook
+	   (lambda () (modify-syntax-table ?\' ".")))
+
+;; (require 'golden-ratio)
+;; (golden-ratio-mode 1)
+;; (add-to-list 'golden-ratio-extra-commands 'ace-window)
+
+;;(load "folding" 'nomessage 'noerror)
+;;(folding-mode-add-find-file-hook)
+
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
+(require 'golden-ratio-scroll-screen)
+(global-set-key [remap scroll-down-command] 'golden-ratio-scroll-screen-down)
+(global-set-key [remap scroll-up-command] 'golden-ratio-scroll-screen-up)
 
 ;; Powerline / telephone-line
 ;; Install from melpa
-;;(require 'telephone-line)
-;;(telephone-line-mode 1)
+(require 'telephone-line)
+(telephone-line-mode 1)
 
+(defun window-split-toggle ()
+  "Toggle between horizontal and vertical split with two windows."
+  (interactive)
+  (if (> (length (window-list)) 2)
+      (error "Can't toggle with more than 2 windows!")
+    (let ((func (if (window-full-height-p)
+                    #'split-window-vertically
+                  #'split-window-horizontally)))
+      (delete-other-windows)
+      (funcall func)
+      (save-selected-window
+        (other-window 1)
+        (switch-to-buffer (other-buffer))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'load-path "~/opt/emacs-doom-themes/")
 
 ;; Doom themes
-;;(require 'doom-themes)
+(require 'doom-themes)
 
 ;; Global settings (defaults)
-;;(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-;;      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t) ; if nil, italics is universally disabled
 
 ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
 ;; may have their own settings.
-;;(load-theme 'doom-one t)
+(load-theme 'doom-one t)
 
 ;; Enable flashing mode-line on errors
-;;(doom-themes-visual-bell-config)
+(doom-themes-visual-bell-config)
 
 ;; Enable custom neotree theme
-;;(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
 
 ;; Corrects (and improves) org-mode's native fontification.
-;;(doom-themes-org-config)
+(doom-themes-org-config)
