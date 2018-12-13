@@ -23,7 +23,8 @@ font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+# bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec urxvt
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -109,17 +110,25 @@ bindsym $mod+8 workspace number 8
 bindsym $mod+9 workspace number 9
 bindsym $mod+0 workspace number 10
 
+# switch workspaces sequentiall
+bindsym $mod+period workspace next
+bindsym $mod+comma workspace prev
+
 # move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace 1:work
+bindsym $mod+Shift+1 move container to workspace 1:build
 bindsym $mod+Shift+2 move container to workspace 2:www
 bindsym $mod+Shift+3 move container to workspace 3:im
-bindsym $mod+Shift+4 move container to workspace 4:build
+bindsym $mod+Shift+4 move container to workspace 4:spotify
 bindsym $mod+Shift+5 move container to workspace 5:steam
 bindsym $mod+Shift+6 move container to workspace 6:gimp
 bindsym $mod+Shift+7 move container to workspace 7:matlab
 bindsym $mod+Shift+8 move container to workspace 8:audacity
 bindsym $mod+Shift+9 move container to workspace 9:config
-bindsym $mod+Shift+0 move container to workspace 10:spotify
+bindsym $mod+Shift+0 move container to workspace 10:work
+
+# switch workspaces sequentiall
+bindsym $mod+Shift+period move container to workspace next
+bindsym $mod+Shift+comma move container to workspace prev
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -202,5 +211,6 @@ new_float pixel 8
 # bindcode 214 exec --no-startup-id /home/michael/toggle_beamer.sh
 
 # Application specific settings
-assign [title="^Google Hangouts"] → im
-assign [class="^Slack$"] → im
+assign [title="^Google Hangouts"] → 3:im
+assign [title="^Google Hangouts - bwood@magicleap.com"] → 3:im
+assign [class="^Slack$"] → 3:im
