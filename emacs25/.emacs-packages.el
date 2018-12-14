@@ -16,6 +16,7 @@
 		xref-js2
 		js2-highlight-vars
 		company-tern
+		web-beautify
 		rainbow-mode
 		fontify-face
 		company-c-headers
