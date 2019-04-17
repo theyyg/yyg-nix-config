@@ -1,0 +1,7 @@
+# Bear symbol file
+compile_commands.json
+
+# emacs autosave
+\#*\#
+.\#*
+\#*#

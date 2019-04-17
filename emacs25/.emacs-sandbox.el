@@ -24,8 +24,8 @@
 
 ;; Scroll bar, Tool bar, Menu bar from http://aaronbedra.com/emacs.d/
 (scroll-bar-mode -1)
-;;(tool-bar-mode -1)
-;;(menu-bar-mode -1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
 
 ;; Marking and Selecting from http://aaronbedra.com/emacs.d/
 (delete-selection-mode t)
@@ -55,6 +55,10 @@
 
 ;; Code Navigation
 (global-set-key (kbd "C-M-u") 'up-list)
+
+;; Code formatting
+(global-set-key (kbd "C-<tab>") 'clang-format-region)
+;; (setq clang-format-style
 
 ;; C++ indenting stuff
 (defun my-c-mode-common-hook ()
@@ -127,32 +131,61 @@
 
 (when window-system
   (load-theme 'base16-woodland t))
-
-(load-theme 'base16-woodland t)
+;;; (load-theme 'base16-woodland t)
 
 ;; org mode todo states
 (setq org-todo-keywords
-  '((sequence "TODO" "ASSIGNED" "IN WORK" "WAITING" "WATCH" "|" "FIXED" "WILL NOT FIX" "DUPLICATE" "INTEGRATED" "CLOSED")))
+	  '((sequence "TODO(t)" "ASSIGNED(a)" "IN PROGRESS(p)" "WAITING(w)" "WATCH(h)" "|" "FIXED(f)" "WILL NOT FIX(n)" "DUPLICATE(d)" "INTEGRATED(i)" "CLOSED(c)")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;(add-to-list 'load-path "~/opt/emacs-doom-themes/")
+;; AGILE Board
+;; "TODO" "In Progress" "Implemented" "Integrated" "Complete"
+;; Bug Workflow
+;; "NEW" "ASSIGNED" "WAITING" "IN WORK" "FIXED" "INTEGRATED" "CLOSED" "WAITING" "DUPLICATE" "WILL NOT FIX" "REOPENED"
+;; Story Workflow
+;; "DRAFT" "APPROVED BACKLOG" "IN PROGRESS" "IMPLEMENTED" "INTEGRATED" "VERIFIED" "COMPLETED" "BLOCKED" "REJECTED"
 
-;; Doom themes
-;(require 'doom-themes)
+;; Saved for future reference
+;; Separate C-i and tab
+;; (setq local-function-key-map (delq '(kp-tab . [9]) local-function-key-map))
+;; 
+;; ;; this is C-i
+;; (global-set-key (kbd "C-i") (lambda () (interactive) (message "C-i"))) 
+;; ;; this is <tab> key
+;; (global-set-key (kbd "<tab>") (lambda () (interactive) (message "<tab>")))
 
-;; Global settings (defaults)
-;(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-;      doom-themes-enable-italic t) ; if nil, italics is universally disabled
 
-;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
-;; may have their own settings.
-;(load-theme 'doom-one t)
+;; Set auto save files to an auto-save directory
+(setq auto-save-file-name-transforms
+          `((".*" ,(concat user-emacs-directory "auto-save") t))) 
 
-;; Enable flashing mode-line on errors
-;(doom-themes-visual-bell-config)
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name
+                 (concat user-emacs-directory "backups")))))
 
-;; Enable custom neotree theme
-;(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
 
-;; Corrects (and improves) org-mode's native fontification.
-;(doom-themes-org-config)
+;;; Transparency
+
+;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
+;;(set-frame-parameter (selected-frame) 'alpha <both>)
+(set-frame-parameter (selected-frame) 'alpha '(85 . 50))
+(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+
+(defun toggle-transparency ()
+  (interactive)
+  (let ((alpha (frame-parameter nil 'alpha)))
+    (set-frame-parameter
+     nil 'alpha
+     (if (eql (cond ((numberp alpha) alpha)
+		    ((numberp (cdr alpha)) (cdr alpha))
+		    ;; Also handle undocumented (<active> <inactive>) form.
+		    ((numberp (cadr alpha)) (cadr alpha)))
+	      100)
+	 '(85 . 50) '(100 . 100)))))
+
+(global-set-key (kbd "C-c t") 'toggle-transparency)
+
+;; Set transparency of emacs
+(defun transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
