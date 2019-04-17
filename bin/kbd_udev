@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Call the kbd configuration script in the background
+/home/MAGICLEAP/bwood/bin/kbd &

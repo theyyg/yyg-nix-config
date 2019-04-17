@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Custom keyboard script for Razer Blackwidow Ultimate 2012 (Mac edition)
+# This script was modified from:
+# [https://superuser.com/questions/249064/udev-rule-to-auto-load-keyboard-layout-when-usb-keyboard-plugged-in]
+
+sleep 1
+DISPLAY=":0.0"
+HOME=/home/MAGICLEAP/bwood/
+XAUTHORITY=$HOME/.Xauthority
+export DISPLAY XAUTHORITY HOME
+rzrkb_id=`xinput -list | grep -i 'Razer BlackWidow Ultimate' | grep -o id=[0-9]. | grep -o [0-9]. | head -1`
+
+xset r rate 200 30
+setxkbmap -layout us
+setxkbmap -option ctrl:swapcaps
+if [ "${rzrkb_id}" ]; then
+    setxkbmap -device "${rzrkb_id}" -option altwin:swap_lalt_lwin
+fi

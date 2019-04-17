@@ -1,0 +1,44 @@
+Brand Colors: RGB
+
+Light Purple:       136,132,213
+Strong Purple:      59,0,131
+Purple Black:       39,36,69
+Tan:                241,227,184
+Tangerine:          255,182,18
+Brown Black:	    42,38,35
+Spring Green:	    162,173,0
+Olive Green:	    85,96,28
+
+
+// Slack theme
+// Add this to /usr/lib/slack/resources/app.asar.unpacked/src/static/ssb-interop.js
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    let tt__customCss = `
+        body, .channel_header, #footer, .channel_title_info, #channel_topic_text, .p-message_pane .c-message_list.c-virtual_list--scrollbar > .c-scrollbar__hider, .client_channels_list_container { background: rgb(42,38,35); }
+        .c-message__body { color: rgb(241,227,187); }
+        .c-message_list__unread_divider__label, .p-message_pane__unread_banner__banner, .c-mrkdwn__member--mention, .p-message_pane__unread_banner__msg, .p-message_pane__unread_banner__close, .p-message_pane__unread_banner__close--detached { background: rgb(85,96,28) !important;  border-color: rgb(85,96,28); }
+        .p-message_pane__unread_banner__banner { color: rgb(241,227,187); text-shadow: none; }
+        .c-message_list__unread_divider__separator { border-color: rgb(255,182,18); }
+        #team_menu, .p-channel_sidebar { background: rgb(39,36,69) !important; }
+        .c-presence--active {color: rgb(241,227,187) !important;}
+        nav.p-channel_sidebar .p-channel_sidebar__channel--selected, .p-channel_sidebar__link--selected, .c-message_list__day_divider__label__pill, .p-message_pane .c-message_list.c-virtual_list--scrollbar > .c-scrollbar__hider:before, .divider_label { color: rgb(42,38,35) !important; background: rgb(255,182,18) !important; }
+        .c-mrkdwn__member--link { background: rgb(27, 139, 210); color: rgb(241,227,187) !important; }
+        .c-message_list__day_divider__line, .divider_line { border-top-color: rgb(255,182,18) !important; }
+        #msg_input, #primary_file_button { background: rgb(85,96,28) !important; }
+        #msg_form #msg_input { border-color: transparent; }
+        #msg_input.texty_legacy .ql-placeholder { color: rgb(241,227,184); opacity: 0.5; }
+
+        .search_form { background: rgb(85,96,28) !important; }
+        .inline_message_input_container.with_file_upload { background: rgb(85,96,28) !important; border-color: rgb(42,38,35) !important; }
+        .reply-input-container, .texty_legacy { background: rgb(85,96,28) !important; border-color: rgb(42,38,35) !important; border-style: none !important; }
+        #threads_msgs_scroller_div, ts-thread {background: rgb(42,38,35); important;}
+        ts-message.active:not(.standalone):not(.multi_delete_mode):not(.highlight):not(.new_reply):not(.show_broadcast_indicator),ts-message.message--focus:not(.standalone):not(.multi_delete_mode):not(.highlight):not(.new_reply):not(.show_broadcast_indicator),ts-message:hover:not(.standalone):not(.multi_delete_mode):not(.highlight):not(.new_reply):not(.show_broadcast_indicator){ background: rgb(39,36,69) !important; }
+    `;
+    $.ajax({
+        url: 'https://cdn.rawgit.com/laCour/slack-night-mode/master/css/raw/black.css',
+        success: function(css) {
+            $('<style></style>').appendTo('head').html(css + tt__customCss);
+        }
+    });

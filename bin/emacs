@@ -1,0 +1,3 @@
+#!/bin/bash
+
+emacsclient -nc -e '(switch-to-buffer nil)' $*
