@@ -1,0 +1,49 @@
+! transparency is set in .Xdefaults
+! URxvt*depth: 32
+! URxvt*background: rgba:0000/0000/0000/c800
+
+! ** Color settings **
+! 49 for background and 39 for foreground
+! change to red background
+! URxvt.keysym.C-7: command:\033]49;#ff0000\007
+! change to light background
+! URxvt.keysym.C-8: command:\033]49;#ffffff\007
+! change to dark gray background
+! URxvt.keysym.C-9: command:\033]49;#777777\007
+
+!#define background_opacity 0.0
+
+! #include "/home/MAGICLEAP/bwood/opt/base16-xresources/xresources/base16-atelier-estuary.Xresources"
+#include "/home/MAGICLEAP/bwood/opt/base16-xresources/xresources/base16-woodland-256.Xresources"
+! #include "/home/MAGICLEAP/bwood/opt/base16-xresources/xresources/base16-woodland.Xresources"
+
+! Fake Transparency - copy background to shell
+! Shell transparency
+!URxvt.transparent: true
+!URxvt.shading: 40
+
+! Real Transparency - using compositor
+urxvt*depth: 32
+urxvt*background: rgba:0000/0000/0000/c800
+
+! ** Font settings ** 
+URxvt.font: xft:PragmataProForPowerline:size=11
+
+! ** Scroll bar settings **
+! do not scroll with output
+URxvt*scrollTtyOutput: false
+! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+URxvt*scrollWithBuffer: true
+! scroll back to the bottom on keypress
+*scrollTtyKeypress: true
+! hide the scrollBar
+URxvt*scrollBar: false
+
+! change to red background
+! URxvt.keysym.C-7: command:\033]11;#d35c5c\007
+
+! change to light background
+! URxvt.keysym.C-8: command:\033]11;#302b25\007
+
+! change to dark gray background
+! URxvt.keysym.C-9: command:\033]11;#b49368\007
