@@ -3,8 +3,9 @@
 CONFIG="$( cd "$(dirname "$0")" ; pwd -P )"
 
 cd ~
-
-mkdir ~/.oldhome
+OLD="~/.oldhome"
+mkdir $OLD
+echo "Current configurations files have been moved to $OLD"
 
 # Backup existing configuration
 if [[ -f "~/.bashrc" ]]; then

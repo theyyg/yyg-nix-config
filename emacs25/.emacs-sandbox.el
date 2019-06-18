@@ -53,11 +53,15 @@
       visible-bell t)
 (show-paren-mode t)
 
+;; Revert the current buffer (useful when switching between git branches
+(global-set-key (kbd "C-<escape>") 'revert-buffer)
+
 ;; Code Navigation
 (global-set-key (kbd "C-M-u") 'up-list)
 
 ;; Code formatting
 (global-set-key (kbd "C-<tab>") 'clang-format-region)
+(global-set-key (kbd "C-`") 'clang-format-buffer)
 ;; (setq clang-format-style
 
 ;; C++ indenting stuff
@@ -129,8 +133,8 @@
         (other-window 1)
         (switch-to-buffer (other-buffer))))))
 
-(when window-system
-  (load-theme 'base16-woodland t))
+;; (when window-system
+;;  (load-theme 'base16-woodland t))
 ;;; (load-theme 'base16-woodland t)
 
 ;; org mode todo states
@@ -167,8 +171,8 @@
 
 ;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
 ;;(set-frame-parameter (selected-frame) 'alpha <both>)
-(set-frame-parameter (selected-frame) 'alpha '(85 . 50))
-(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+(set-frame-parameter (selected-frame) 'alpha '(95 . 80))
+(add-to-list 'default-frame-alist '(alpha . (95 . 80)))
 
 (defun toggle-transparency ()
   (interactive)
@@ -180,7 +184,7 @@
 		    ;; Also handle undocumented (<active> <inactive>) form.
 		    ((numberp (cadr alpha)) (cadr alpha)))
 	      100)
-	 '(85 . 50) '(100 . 100)))))
+	 '(95 . 80) '(100 . 100)))))
 
 (global-set-key (kbd "C-c t") 'toggle-transparency)
 

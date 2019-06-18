@@ -6,9 +6,9 @@
 (load custom-file)
 
 ;; Add my own emacs directory to the load path.
-(setq load-path
-      (cons (condition-case () (expand-file-name "~/emacs") (error nil) )
-            load-path) )
+;; (setq load-path
+;;       (cons (condition-case () (expand-file-name "~/emacs") (error nil) )
+;;             load-path) )
 
 (setq custom-file "~/.emacs-ml.el")
 (load custom-file)
@@ -27,7 +27,7 @@
  '(flymake-google-cpplint-verbose "--verbose=0")
  '(package-selected-packages
    (quote
-    (company-lsp cquery lsp-mode clang-format realgud google-c-style flymake-google-cpplint flymake-cursor use-package))))
+    (company-lsp cquery lsp-mode clang-format realgud google-c-style flymake-google-cpplint flymake-cursor))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
