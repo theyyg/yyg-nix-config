@@ -10,9 +10,6 @@
 ;;       (cons (condition-case () (expand-file-name "~/emacs") (error nil) )
 ;;             load-path) )
 
-(setq custom-file "~/.emacs-ml.el")
-(load custom-file)
-
 ;; Keep my customizations in a file separate from the .emacs file.
 (setq sandbox-file "~/.emacs-sandbox.el")
 (load sandbox-file)

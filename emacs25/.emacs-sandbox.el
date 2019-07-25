@@ -110,9 +110,9 @@
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
-(require 'golden-ratio-scroll-screen)
-(global-set-key [remap scroll-down-command] 'golden-ratio-scroll-screen-down)
-(global-set-key [remap scroll-up-command] 'golden-ratio-scroll-screen-up)
+;; (require 'golden-ratio-scroll-screen)
+;; (global-set-key [remap scroll-down-command] 'golden-ratio-scroll-screen-down)
+;; (global-set-key [remap scroll-up-command] 'golden-ratio-scroll-screen-up)
 
 ;; Powerline / telephone-line
 ;; Install from melpa

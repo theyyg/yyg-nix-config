@@ -1,43 +1,61 @@
 #!/bin/bash
 
 CONFIG="$( cd "$(dirname "$0")" ; pwd -P )"
+pushd `pwd`
 
 cd ~
 OLD="~/.oldhome"
-mkdir $OLD
-echo "Current configurations files have been moved to $OLD"
+mkdir -p $OLD
 
-# Backup existing configuration
-if [[ -f "~/.bashrc" ]]; then
-    mv ~/.bashrc ~/.oldhome
+move_and_link() {
+    if [ $# -eq 4 ]; then
+		# Backup directory
+		BACK="$1"
+
+		# Source file directory
+		FOLDER="$2"
+
+		# Destination directory of soft link
+		DEST="$3"
+
+		# File name
+		FILE="$4"
+
+		if [ -f "$DEST/$FILE" ] || [ -L "$DEST/$FILE" ]; then
+			echo "> mv $DEST/$FILE $BACK/$FILE"
+			mv $DEST/$FILE $BACK/$FILE
+			echo "- $FILE has been backed up to $BACK/$FILE"
+		fi
+
+		if [ ! -f "$DEST/$FILE" ] || [ ! -L "$DEST/$FILE" ]; then
+			echo "> ln -s $FOLDER/$FILE $DEST/$FILE"
+			ln -s $FOLDER/$FILE $DEST/$FILE
+			echo "- $FILE has been linked to ($DEST/$FILE)"
+		fi
+    fi
+    echo ""
+}
+
+move_and_link $OLD $CONFIG/home $HOME .bashrc
+move_and_link $OLD $CONFIG/home $HOME .bash_logout
+move_and_link $OLD $CONFIG/home $HOME .bash_env
+move_and_link $OLD $CONFIG/home $HOME .bash_aliases
+move_and_link $OLD $CONFIG/home $HOME .bash_custom
+move_and_link $OLD $CONFIG/home $HOME .fehbg
+move_and_link $OLD $CONFIG/home $HOME .gitignore_global
+move_and_link $OLD $CONFIG/home $HOME .profile
+move_and_link $OLD $CONFIG/home $HOME .Xdefaults
+move_and_link $OLD $CONFIG/home $HOME .xinitrc
+# move_and_link $OLD $CONFIG/home $HOME .xinputrc
+move_and_link $OLD $CONFIG/home $HOME .Xresources
+move_and_link $OLD $CONFIG/home $HOME .xsession
+
+if [ ! -L "$CONFIG/emacs" ]; then
+	ln -s $CONFIG/emacs25 $CONFIG/emacs
 fi
-if [[ -f "~/.bash_logout" ]]; then
-    mv ~/.bash_logout ~/.oldhome
-fi
-if [[ -f "~/.emacs" ]]; then
-    mv ~/.emacs ~/.oldhome
-fi
 
-# Setup soft links to point to git config
-ln -s $CONFIG/home/.bashrc
-ln -s $CONFIG/home/.bash_logout
-ln -s $CONFIG/home/.bash_env
-ln -s $CONFIG/home/.bash_aliases
-ln -s $CONFIG/home/.bash_custom
-ln -s $CONFIG/home/.fehbg
-ln -s $CONFIG/home/.gitignore_global
-ln -s $CONFIG/home/.profile
-ln -s $CONFIG/home/.Xdefaults
-ln -s $CONFIG/home/.xinitrc
-ln -s $CONFIG/home/.xinputrc
-ln -s $CONFIG/home/.Xresources
-ln -s $CONFIG/home/.xsession
+move_and_link $OLD $CONFIG/emacs $HOME .emacs
+move_and_link $OLD $CONFIG/emacs $HOME .emacs-custom.el
+# move_and_link $OLD $CONFIG $HOME emacs
 
-# EMACS
-#   For emacs25
-ln -s $CONFIG/emacs/emacs25 $CONFIG/emacs
-
-ln -s $CONFIG/emacs/.emacs
-ln -s $CONFIG/emacs/.emacs-custom.el
-ln -s $CONFIG/emacs/emacs
-
+popd
