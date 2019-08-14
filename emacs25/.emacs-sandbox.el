@@ -116,8 +116,8 @@
 
 ;; Powerline / telephone-line
 ;; Install from melpa
-(require 'telephone-line)
-(telephone-line-mode 1)
+;; (require 'telephone-line)
+;; (telephone-line-mode 1)
 
 (defun window-split-toggle ()
   "Toggle between horizontal and vertical split with two windows."

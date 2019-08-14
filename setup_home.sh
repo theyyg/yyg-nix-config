@@ -58,4 +58,15 @@ move_and_link $OLD $CONFIG/emacs $HOME .emacs
 move_and_link $OLD $CONFIG/emacs $HOME .emacs-custom.el
 # move_and_link $OLD $CONFIG $HOME emacs
 
+move_and_link $OLD $CONFIG/ $HOME .i3
+if [ ! -L "$CONFIG/bin/i3-name" ]; then
+	ln -s $CONFIG/.i3/i3-container-name.sh $CONFIG/bin/i3-name
+fi
+if [ ! -L "$CONFIG/bin/i3-sh" ]; then
+	ln -s $CONFIG/.i3/i3-container-name.sh $CONFIG/bin/i3-sh
+fi
+if [ ! -L "$CONFIG/bin/i3-ws" ]; then
+	ln -s $CONFIG/.i3/i3-create-workspace.sh $CONFIG/bin/i3-ws
+fi
+
 popd

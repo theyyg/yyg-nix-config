@@ -13,9 +13,9 @@
 
 !#define background_opacity 0.0
 
-! #include "/home/MAGICLEAP/bwood/opt/base16-xresources/xresources/base16-atelier-estuary.Xresources"
-#include "/home/MAGICLEAP/bwood/opt/base16-xresources/xresources/base16-woodland-256.Xresources"
-! #include "/home/MAGICLEAP/bwood/opt/base16-xresources/xresources/base16-woodland.Xresources"
+! #include "~/opt/base16-xresources/xresources/base16-atelier-estuary.Xresources"
+#include "/home/local/MAGICLEAP/bwood/opt/base16-xresources/xresources/base16-woodland-256.Xresources"
+! #include "~/opt/base16-xresources/xresources/base16-woodland.Xresources"
 
 ! Fake Transparency - copy background to shell
 ! Shell transparency
