@@ -59,3 +59,5 @@ move_and_link $OLD $CONFIG/emacs $HOME .emacs-custom.el
 # move_and_link $OLD $CONFIG $HOME emacs
 
 popd
+
+gsettings set org.gnome.desktop.background show-desktop-icons true

@@ -19,6 +19,40 @@
       (message "%s" file)
       (delete-file file))))
 
+;; Collapse code block; code folding
+;; - 
+;; set-selective-display
+;; C-u xx C-$
+;; -
+;; hide-show
+;; C-c @ C-c
+(defun toggle-selective-display (column)
+  (interactive "P")
+  (set-selective-display
+   (or column
+	   (unless selective-display
+		 (1+ (current-column))))))
+
+(defun toggle-hiding (column)
+  (interactive "P")
+  (if hs-minor-mode
+	  (if (condition-case nil
+			  (hs-toggle-hiding)
+			(error t))
+		  (hs-show-all))
+	(toggle-selective-display column)))
+
+(load-library "hideshow")
+(global-set-key (kbd "C-=") 'toggle-hiding)
+(global-set-key (kbd "C-\\") 'toggle-selective-display)
+
+(add-hook 'c-mode-common-hook   'hs-minor-mode)
+(add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
+(add-hook 'java-mode-hook       'hs-minor-mode)
+(add-hook 'lisp-mode-hook       'hs-minor-mode)
+(add-hook 'perl-mode-hook       'hs-minor-mode)
+(add-hook 'sh-mode-hook         'hs-minor-mode)
+
 ;; Yes and No from http://aaronbedra.com/emacs.d/
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -80,6 +114,7 @@
   (setq tab-width 4)
   (setq indent-tabs-mode nil)  ; use spaces only if nil
   (hl-line-mode t)
+  (hs-minor-mode t)
   )
 
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
