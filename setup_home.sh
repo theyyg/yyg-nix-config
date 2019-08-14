@@ -70,3 +70,5 @@ if [ ! -L "$CONFIG/bin/i3-ws" ]; then
 fi
 
 popd
+
+gsettings set org.gnome.desktop.background show-desktop-icons true
