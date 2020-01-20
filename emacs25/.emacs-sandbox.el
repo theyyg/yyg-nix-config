@@ -87,6 +87,12 @@
       visible-bell t)
 (show-paren-mode t)
 
+;; Key bindings to resize windows from https://www.emacswiki.org/emacs/WindowResize
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>") 'shrink-window)
+(global-set-key (kbd "S-C-<up>") 'enlarge-window)
+
 ;; Revert the current buffer (useful when switching between git branches
 (global-set-key (kbd "C-<escape>") 'revert-buffer)
 
@@ -115,9 +121,18 @@
   (setq indent-tabs-mode nil)  ; use spaces only if nil
   (hl-line-mode t)
   (hs-minor-mode t)
+  (lsp)  ;  LSP connection for auto-complete and code navigation
   )
 
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+
+;; C++ indenting stuff
+(defun my-js-mode-hook ()
+  (setq indent-tabs-mode nil)  ; use spaces only if nil
+  )
+
+(add-hook 'js-mode-hook 'my-js-mode-hook)
+
 
 ;; Show column of cursor
 (setq column-number-mode t)
@@ -192,6 +207,15 @@
 ;; ;; this is <tab> key
 ;; (global-set-key (kbd "<tab>") (lambda () (interactive) (message "<tab>")))
 
+;; Copy file::line to kill ring for pasting into org link
+(defun position-to-kill-ring ()
+  "Copy to the kill ring a string in the format \"file-name:line-number\"
+for the current buffer's file name, and the line number at point."
+  (interactive)
+  (kill-new
+   (format "%s::%d" (buffer-file-name) (save-restriction
+										 (widen) (line-number-at-pos)))))
+(global-set-key (kbd "M-`") 'position-to-kill-ring)
 
 ;; Set auto save files to an auto-save directory
 (setq auto-save-file-name-transforms
@@ -228,3 +252,36 @@
   "Sets the transparency of the frame window. 0=transparent/100=opaque"
   (interactive "nTransparency Value 0 - 100 opaque:")
   (set-frame-parameter (selected-frame) 'alpha value))
+
+
+;;;---------------------------------------------------------------------
+;;; display-buffer
+
+;; The default behaviour of `display-buffer' is to always create a new
+;; window. As I normally use a large display sporting a number of
+;; side-by-side windows, this is a bit obnoxious.
+;;
+;; The code below will make Emacs reuse existing windows, with the
+;; exception that if have a single window open in a large display, it
+;; will be split horisontally.
+;; 
+(setq pop-up-windows t)
+(setq pop-up-frames nil)
+
+;; (defun my-display-buffer-function (buf not-this-window)
+;;   (if (and (not pop-up-frames)
+;;            (one-window-p)
+;;            (or not-this-window
+;;                (not (eq (window-buffer (selected-window)) buf)))
+;;            (> (frame-width) 162))
+;;       (split-window-horizontally))
+;;   ;; Note: Some modules sets `pop-up-windows' to t before calling
+;;   ;; `display-buffer' -- Why, oh, why!
+;;   (let ((display-buffer-function nil)
+;;         (pop-up-windows nil))
+;;     (display-buffer buf not-this-window)))
+;; 
+;; (setq display-buffer-function 'my-display-buffer-function)
+
+;; (setq split-height-threshold 61)
+;; (setq split-width-threshold 161)

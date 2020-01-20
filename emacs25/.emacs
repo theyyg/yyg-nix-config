@@ -12,7 +12,7 @@
 
 ;; Keep my customizations in a file separate from the .emacs file.
 (setq sandbox-file "~/.emacs-sandbox.el")
-(load sandbox-file)
+;; (load sandbox-file)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

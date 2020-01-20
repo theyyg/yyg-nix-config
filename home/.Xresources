@@ -24,7 +24,7 @@
 
 ! Real Transparency - using compositor
 urxvt*depth: 32
-urxvt*background: rgba:0000/0000/0000/c800
+urxvt*background: rgba:0000/0000/0000/ee00
 
 ! ** Font settings ** 
 URxvt.font: xft:PragmataProForPowerline:size=11
