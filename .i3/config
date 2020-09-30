@@ -109,6 +109,8 @@ bindsym $mod+7 workspace number 7
 bindsym $mod+8 workspace number 8
 bindsym $mod+9 workspace number 9
 bindsym $mod+0 workspace number 10
+bindsym $mod+minus workspace number 11
+bindsym $mod+equal workspace number 12
 
 # switch workspaces sequentiall
 bindsym $mod+period workspace next
@@ -117,7 +119,7 @@ bindsym $mod+comma workspace prev
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1:build
 bindsym $mod+Shift+2 move container to workspace 2:emacs
-bindsym $mod+Shift+3 move container to workspace 3:config
+bindsym $mod+Shift+3 move container to workspace 3:task
 bindsym $mod+Shift+4 move container to workspace 4:apps
 bindsym $mod+Shift+5 move container to workspace 5:matlab
 bindsym $mod+Shift+6 move container to workspace 6:audacity
@@ -125,8 +127,29 @@ bindsym $mod+Shift+7 move container to workspace 7:steam
 bindsym $mod+Shift+8 move container to workspace 8:spotify
 bindsym $mod+Shift+9 move container to workspace 9:im
 bindsym $mod+Shift+0 move container to workspace 10:www
+bindsym $mod+Shift+minus move container to workspace 11:test
+bindsym $mod+Shift+equal move container to workspace 12:track
 
-# switch workspaces sequentiall
+#binding keycodes use the codes seen when running xmodmap -pke
+# ~ tilde or or ` grave
+bindcode $mod+49 scratchpad show
+
+# ~ tilde or or ` grave
+bindcode $mod+Shift+49 move scratchpad
+
+# Show the sup-mail scratchpad window, if any.
+bindsym $mod+Tab [title="org$"] scratchpad show
+
+# Show scratch Spotify
+bindsym $mod+F8 [title="^Spotify"] scratchpad show
+
+# Show scratch Slack
+bindsym $mod+F9 [title="^Slack"] scratchpad show
+
+# Show scratch web browser
+bindsym $mod+F10 [title="Google Chrome$"] scratchpad show
+
+# switch workspaces sequential
 bindsym $mod+Shift+period move container to workspace next
 bindsym $mod+Shift+comma move container to workspace prev
 
