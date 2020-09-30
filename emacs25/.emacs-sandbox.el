@@ -19,6 +19,14 @@
       (message "%s" file)
       (delete-file file))))
 
+;; GDB many windows layout
+(setq
+ ;; use gdb-many-windows by default
+ gdb-many-windows t
+ ;; Non-nil means display source file containging the main routine at startup
+ gdb-show-main t
+ )
+
 ;; Collapse code block; code folding
 ;; - 
 ;; set-selective-display
@@ -75,6 +83,10 @@
 (setq tab-width 4
       indent-tabs-mode nil)
 
+;; C-style
+(setq c-default-style "google"
+      c-basic-offset 4)
+
 ;; Key bindings from http://aaronbedra.com/emacs.d/
 (global-set-key (kbd "C-;") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -93,8 +105,11 @@
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
-;; Revert the current buffer (useful when switching between git branches
+;; Revert the current buffer (useful when switching between git branches)
 (global-set-key (kbd "C-<escape>") 'revert-buffer)
+
+;; Clear the entire current buffer (useful for resetting the shell buffer to track new content)
+(global-set-key (kbd "C-M-<escape>") 'erase-buffer)
 
 ;; Code Navigation
 (global-set-key (kbd "C-M-u") 'up-list)
@@ -113,7 +128,7 @@
   ;; other customizations can go here
 
   (setq c++-tab-always-indent t)
-  (setq c-basic-offset 4)                  ;; Default is 2
+  (setq c-basic-offset 4)                  ;; Default is 2  ;; google-c-style.el is overriding this back to 2
   (setq c-indent-level 4)                  ;; Default is 2
 
   (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60))
@@ -191,6 +206,10 @@
 (setq org-todo-keywords
 	  '((sequence "TODO(t)" "ASSIGNED(a)" "IN PROGRESS(p)" "WAITING(w)" "WATCH(h)" "|" "FIXED(f)" "WILL NOT FIX(n)" "DUPLICATE(d)" "INTEGRATED(i)" "CLOSED(c)")))
 
+;; org mode fix indentation in code blocks for export
+(setq org-src-preserve-indentation t
+      org-edit-src-content-indentation 2)
+
 ;; AGILE Board
 ;; "TODO" "In Progress" "Implemented" "Integrated" "Complete"
 ;; Bug Workflow
@@ -230,8 +249,8 @@ for the current buffer's file name, and the line number at point."
 
 ;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
 ;;(set-frame-parameter (selected-frame) 'alpha <both>)
-(set-frame-parameter (selected-frame) 'alpha '(95 . 80))
-(add-to-list 'default-frame-alist '(alpha . (95 . 80)))
+(set-frame-parameter (selected-frame) 'alpha '(100 . 90))
+(add-to-list 'default-frame-alist '(alpha . (100 . 90)))
 
 (defun toggle-transparency ()
   (interactive)
@@ -285,3 +304,35 @@ for the current buffer's file name, and the line number at point."
 
 ;; (setq split-height-threshold 61)
 ;; (setq split-width-threshold 161)
+
+(global-set-key (kbd "M-RET") 'magit-diff-visit-file-other-frame)
+
+;; Org-mode C,C++ language support
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((C . t)))
+
+;; Org-mode Python language support
+(add-to-list 'org-src-lang-modes
+  '("python" . python))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((python . t)))
+
+;; plantUML for org-mode
+;; (Execute this in a scratch buffer to enable plantuml: C-x C-e )
+(setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/bin/plantuml.jar"))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((plantuml . t)))
+
+(defun init-plantuml()
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+  )
+
+(add-hook 'org-mode-hook 'init-plantuml)
+
+
+;; Emacs Ipython Notebook (in org-mode)
+;; '((emacs-lisp . t) (ein . t))

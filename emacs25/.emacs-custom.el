@@ -4,10 +4,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(browse-url-browser-function (quote browse-url-chrome))
- '(custom-enabled-themes (quote (wombat)))
- '(custom-safe-themes
-   (quote
-	("8be07a2c1b3a7300860c7a65c0ad148be6d127671be04d3d2120f1ac541ac103" default)))
  '(fci-rule-color "#5B6268")
  '(flymake-google-cpplint-command "/usr/local/bin/cpplint")
  '(flymake-google-cpplint-filter "--filter=-whitespace/line_length,-build")
@@ -20,11 +16,10 @@
  '(package-archives
    (quote
 	(("gnu" . "http://elpa.gnu.org/packages/")
-	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa-latest" . "https://melpa.org/packages/"))))
  '(package-selected-packages
    (quote
-	(slack magit-gerrit yasnippet hide-lines company-lsp cquery lsp-mode clang-format realgud google-c-style flymake-google-cpplint flymake-cursor telephone-line ace-window magit magit-filenotify magit-find-file magit-lfs magit-org-todos magit-todos)))
+	(python-mode ob-browser ob-html-chrome ob-http ob-ipython ein nlinum graphviz-dot-mode plantuml-mode matlab-mode gnu-elpa-keyring-update dap-mode lsp-treemacs lsp-ui yasnippet-snippets slack magit-gerrit hide-lines company-lsp cquery lsp-mode clang-format realgud google-c-style flymake-google-cpplint flymake-cursor telephone-line ace-window magit magit-filenotify magit-find-file magit-lfs magit-org-todos magit-todos)))
  '(shift-select-mode nil)
  '(sr-speedbar-right-side nil)
  '(tab-width 4)
