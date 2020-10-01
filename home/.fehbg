@@ -1,1 +1,2 @@
-feh --bg-fill '/home/MAGICLEAP/bwood/Pictures/FlatWallpapers/90092.jpg' '/home/MAGICLEAP/bwood/Pictures/FlatWallpapers/90184.jpg' '/home/MAGICLEAP/bwood/Pictures/FlatWallpapers/90254.jpg'
+#!/bin/sh
+feh  --bg-fill ~/Pictures/bg-center.jpg ~/Pictures/bg-left.jpg ~/Pictures/bg-right.jpg
