@@ -127,7 +127,7 @@ bindsym $mod+Shift+7 move container to workspace 7:steam
 bindsym $mod+Shift+8 move container to workspace 8:spotify
 bindsym $mod+Shift+9 move container to workspace 9:im
 bindsym $mod+Shift+0 move container to workspace 10:www
-bindsym $mod+Shift+minus move container to workspace 11:test
+bindsym $mod+Shift+minus move container to workspace 11:present
 bindsym $mod+Shift+equal move container to workspace 12:track
 
 #binding keycodes use the codes seen when running xmodmap -pke

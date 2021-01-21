@@ -1,0 +1,23 @@
+#+TITLE:   PlantUML Test Org
+
+#+BEGIN_SRC plantuml :file ./test-org.png
+title MSA 3 Synthesis Engine
+
+@startuml
+!$inc_dir = "/home/local/MAGICLEAP/bwood/yyg-arsenal/plantuml"
+!include $inc_dir/yyg-custom.puml
+
+block("A", "Test A")
+block("B", "Test B")
+
+
+B-->A
+A-->B
+C->D
+
+@enduml
+#+END_SRC
+
+#+RESULTS:
+[[file:./test-org.png]]
+#+RESULTS

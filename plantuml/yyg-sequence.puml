@@ -1,0 +1,227 @@
+' Yyg Custom PlantUML Configs and Shortcuts
+' - This uses the plantuml "use case" style
+'  https://github.com/theyyg/yyg-nix-config/tree/master/plantuml
+'  patterned after the plant uml standard library https://plantuml.com/stdlib
+'
+' Download and install plantuml https://plantuml.com/download
+' Install plantuml-mode via melpa
+'
+' To use in org mode:
+'  First: Run these scripts in a scratch buffer or add to emacs config
+'   Scratch:
+'    (setq org-plantuml-jar-path (expand-file-name "/home/you/path/to/plantuml.jar"))
+'    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+'    (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+'
+'   .emacs.el:
+'    (setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/bin/plantuml.jar"))
+'
+'    (org-babel-do-load-languages
+'     'org-babel-load-languages
+'     '((plantuml . t)))
+'
+'    (defun init-plantuml()
+'      (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+'      (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+'      )
+'
+'    (add-hook 'org-mode-hook 'init-plantuml)
+'
+' Using PlantUML in org-mode
+'  Create a plantuml source block:
+'   #+begin_src plantuml :file ./chart-name.png
+'   title Chart Title
+'
+'
+'   #+end_src
+'
+'  Publish plant-uml in org doc by executing C-c C-e h o
+
+' ================================
+' Define Colors
+'
+!$border1 = "#666666"
+!$border2 = "#999999"
+!$appBg1 = "#E9D1DC"
+!$appBg2 = "#D9B1C3"
+!$pluginBg1 = "#D0DEF8"
+!$pluginBg2 = "#B1CAF3"
+!$engineBg1 = "#D1E0E8"
+!$engineBg2 = "#FFFFFF/D1E0E8"
+!$serviceBg1 = "#E3EFDF"
+!$serviceBg2 = "#C2DDB7"
+!$cloud1 = "#E2DCED"
+!$cloud2 = "#BFB4DA"
+!$bg1 = "#CCCCCC"
+!$bg2 = "#AAAAAA"
+!$frameBg1 = "#EEEEEE"
+!$frameBg2 = "#CCCCCC"
+
+!$aud = "#33F,bold"
+!$ctl = "#000,bold"
+!$hid = "hidden"
+
+' ================================
+' Block
+'
+!unquoted procedure Block($e_alias, $label, $e_color=$border)
+entity "$e_label" as $e_alias
+!endprocedure
+
+!unquoted procedure AppBlock($e_alias, $e_label)
+entity "$e_label" as $e_alias $appBg2
+!endprocedure
+
+!unquoted procedure PluginBlock($e_alias, $e_label)
+entity "$e_label" as $e_alias $pluginBg2
+!endprocedure
+
+!unquoted procedure EngineBlock($e_alias, $e_label)
+entity "$e_label" as $e_alias $engineBg2
+!endprocedure
+
+!unquoted procedure ServiceBlock($e_alias, $e_label)
+entity "$e_label" as $e_alias $serviceBg2
+!endprocedure
+
+!unquoted procedure CloudBlock($e_alias, $e_label)
+entity "$e_label" as $e_alias $cloudBg2
+!endprocedure
+
+' ================================
+' Index (Element of a vector)
+'
+!unquoted procedure Index($e_alias, $e_label, $e_color=$border)
+control "For Each \n $e_label" as $e_alias
+!endprocedure
+
+!unquoted procedure AppIndex($e_alias, $e_label)
+control "For Each \n $e_label" as $e_alias $appBg2
+!endprocedure
+
+!unquoted procedure PluginIndex($e_alias, $e_label)
+control "For Each \n $e_label" as $e_alias $pluginBg2
+!endprocedure
+
+!unquoted procedure EngineIndex($e_alias, $e_label)
+control "For Each \n $e_label" as $e_alias $engineBg2
+!endprocedure
+
+!unquoted procedure ServiceIndex($e_alias, $e_label)
+control "For Each \n $e_label" as $e_alias $serviceBg2
+!endprocedure
+
+!unquoted procedure CloudIndex($e_alias, $e_label)
+control "For Each \n $e_label" as $e_alias $cloudBg2
+!endprocedure
+
+' ================================
+' Wrap
+'
+!unquoted procedure Wrap($name)
+box "$name"
+!endprocedure
+
+!unquoted procedure EndWrap()
+end box
+!endprocedure
+
+!unquoted procedure AppWrap($name)
+box "$name"$appBg1
+!endprocedure
+
+!unquoted procedure PluginWrap($name)
+box "$name" $pluginBg1
+!endprocedure
+
+!unquoted procedure EngineWrap($name)
+box "$name" $engineBg1
+!endprocedure
+
+!unquoted procedure ServiceWrap($name)
+box "$name" $serviceBg1
+!endprocedure
+
+!unquoted procedure CloudWrap($name)
+box "$name" $cloudBg1
+!endprocedure
+
+' ================================
+' Group
+'
+!unquoted procedure Group($name)
+group "$name"
+!endprocedure
+
+!unquoted procedure EndGroup()
+end group
+!endprocedure
+
+' ================================
+' Loop
+'
+!unquoted procedure Loop($name)
+loop "$name"
+!endprocedure
+
+!unquoted procedure EndLoop()
+end loop
+!endprocedure
+
+' ================================
+' Style
+'
+skinparam sequence {
+  LifeLineBorderColor $border1
+  LifeLineBackgroundColor $serviceBg2
+
+  ArrowColor black
+}
+'
+' TODO: other sequence styles
+'
+' Delay
+' Divider
+' Message
+' Reference
+' Stereo
+' Title
+
+skinparam SequenceParticipant{
+  BackgroundColor transparent
+  BorderColor $border1
+  BorderThickness 1
+  Shadowing false
+}
+
+skinparam SequenceBox{
+  BackgroundColor transparent
+  BorderColor white
+  BorderThickness 0
+  Shadowing false
+}
+
+skinparam SequenceGroup{
+  BackgroundColor $frameBg1
+  BodyBackgroundColor transparent
+  BorderColor $border1
+  BorderThickness 0
+  Shadowing false
+}
+
+skinparam Control{
+  BackgroundColor transparent
+  BorderColor $border1
+  BorderThickness 1
+  Shadowing false
+}
+
+skinparam Entity{
+  BackgroundColor transparent
+  BorderColor $border1
+  BorderThickness 1
+  Shadowing false
+}
+
+
+skinparam RoundCorner 25

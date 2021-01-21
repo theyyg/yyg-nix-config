@@ -167,23 +167,15 @@
 (add-hook 'c-mode-hook
 	   (lambda () (modify-syntax-table ?\' ".")))
 
-;; (require 'golden-ratio)
-;; (golden-ratio-mode 1)
-;; (add-to-list 'golden-ratio-extra-commands 'ace-window)
-
 ;;(load "folding" 'nomessage 'noerror)
 ;;(folding-mode-add-find-file-hook)
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
-;; (require 'golden-ratio-scroll-screen)
-;; (global-set-key [remap scroll-down-command] 'golden-ratio-scroll-screen-down)
-;; (global-set-key [remap scroll-up-command] 'golden-ratio-scroll-screen-up)
-
 ;; Powerline / telephone-line
 ;; Install from melpa
 ;; (require 'telephone-line)
-;; (telephone-line-mode 1)
+(telephone-line-mode 1)
 
 (defun window-split-toggle ()
   "Toggle between horizontal and vertical split with two windows."
@@ -322,7 +314,7 @@ for the current buffer's file name, and the line number at point."
 
 ;; plantUML for org-mode
 ;; (Execute this in a scratch buffer to enable plantuml: C-x C-e )
-(setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/bin/plantuml.jar"))
+(setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/opt/bwood_arsenal/bin/plantuml.jar"))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -331,9 +323,11 @@ for the current buffer's file name, and the line number at point."
 (defun init-plantuml()
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+  (setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/opt/bwood_arsenal/bin/plantuml.jar"))
   )
 
 (add-hook 'org-mode-hook 'init-plantuml)
+(add-hook 'org-mode-hook 'org-display-inline-images)
 
 ;; Start-up with soft-wrap enabled
 (setq org-startup-truncated nil)  ; This works
@@ -368,3 +362,25 @@ for the current buffer's file name, and the line number at point."
 
 ; Autosave every 500 typed characters
 ;(setq auto-save-interval 500)
+
+
+;; Doom themes
+;; Global settings (defaults)
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+;; may have their own settings.
+(load-theme 'doom-one t)
+
+;; Enable flashing mode-line on errors
+(doom-themes-visual-bell-config)
+
+;; Enable custom neotree theme
+(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+
+;; Corrects (and improves) org-mode's native fontification.
+(doom-themes-org-config)
+
+;; Enable the doom mode line
+(doom-modeline-mode)

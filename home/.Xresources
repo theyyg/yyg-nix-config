@@ -47,3 +47,5 @@ URxvt*scrollBar: false
 
 ! change to dark gray background
 ! URxvt.keysym.C-9: command:\033]11;#b49368\007
+
+emacs.font: PragmataPro for Powerline-10

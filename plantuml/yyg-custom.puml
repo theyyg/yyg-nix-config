@@ -1,0 +1,338 @@
+' Yyg Custom PlantUML Configs and Shortcuts
+' - This uses the plantuml "use case" style
+'  https://github.com/theyyg/yyg-nix-config/tree/master/plantuml
+'  patterned after the plant uml standard library https://plantuml.com/stdlib
+'
+' Download and install plantuml https://plantuml.com/download
+' Install plantuml-mode via melpa
+'
+' To use in org mode:
+'  First: Run these scripts in a scratch buffer or add to emacs config
+'   Scratch:
+'    (setq org-plantuml-jar-path (expand-file-name "/home/you/path/to/plantuml.jar"))
+'    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+'    (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+'
+'   .emacs.el:
+'    (setq org-plantuml-jar-path (expand-file-name "/home/you/path/to/plantuml.jar"))
+'
+'    (org-babel-do-load-languages
+'     'org-babel-load-languages
+'     '((plantuml . t)))
+'
+'    (defun init-plantuml()
+'      (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+'      (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+'      )
+'
+'    (add-hook 'org-mode-hook 'init-plantuml)
+'
+' Using PlantUML in org-mode
+'  Create a plantuml source block:
+'   #+begin_src plantuml :file ./chart-name.png
+'   title Chart Title
+'
+'
+'   #+end_src
+'
+'  Publish plant-uml in org doc by executing C-c C-e h o
+
+' ================================
+' Define Colors
+'
+!$borderDark = "#666666"
+!$borderLight = "#999999"
+!$appBgDark = "#E9D1DC"
+!$appBgLight = "#D9B1C3"
+!$pluginBgDark = "#D0DEF8"
+!$pluginBgLight = "#B1CAF3"
+!$engineBgDark = "#D1E0E8"
+!$engineBgLight = "#D1E0E8"
+!$serviceBgDark = "#E3EFDF"
+!$serviceBgLight = "#C2DDB7"
+!$cloudBgDark = "#E2DCED"
+!$cloudBgLight = "#BFB4DA"
+!$bgDark = "#AAAAAA"
+!$bgLight = "#CCCCCC"
+
+!$aud = "#33F,bold"
+!$ctl = "#000,bold"
+!$hid = "hidden"
+
+' ================================
+' Helper Functions
+'
+!unquoted procedure Factory($style, $alias, $color=bg, $label="none", $shade="none", $ref="false")
+!$cmd = $style + " "
+
+!if ($label != "none")
+!$cmd = $cmd + '"' + $label + '"' + " as " + $alias
+!else
+!$cmd = $cmd + '"' + $alias + '"' + " "
+!endif
+
+
+
+!$fullColor = %get_variable_value("$color")
+!if ($shade == "light")
+!$fullColor = %get_variable_value("$color + Light")
+!endif
+!if ($shade == "dark")
+!$fullColor = %get_variable_value("$color + Dark")
+!endif
+
+!$cmd = $cmd + ' ' + $fullColor
+
+!if ($ref != "false")
+!$cmd = $cmd + ";line.dashed"
+!endif
+
+!log $cmd
+$cmd
+!endprocedure
+
+' ================================
+' Block
+'
+!unquoted procedure Block($alias, $label="none")
+Factory(rectangle, $alias, $bgDark, $label)
+!endprocedure
+
+!unquoted procedure AppBlock($alias, $label="none")
+Factory(rectangle, $alias, $appBgDark, $label)
+!endprocedure
+
+!unquoted procedure PluginBlock($alias, $label="none")
+Factory(rectangle, $alias, $pluginBgDark, $label)
+!endprocedure
+
+!unquoted procedure EngineBlock($alias, $label="none")
+Factory(rectangle, $alias, $engineBgDark, $label)
+!endprocedure
+
+!unquoted procedure ServiceBlock($alias, $label="none")
+Factory(rectangle, $alias, $serviceBgDark, $label)
+!endprocedure
+
+!unquoted procedure CloudBlock($alias, $label="none")
+Factory(rectangle, $alias, $cloudBgDark, $label)
+!endprocedure
+
+' ================================
+' Reference
+'
+'
+!unquoted procedure Ref($alias, $label="none")
+Factory(rectangle, $alias, $bgDark, $label, "none", "true")
+!endprocedure
+
+!unquoted procedure AppRef($alias, $label="none")
+Factory(rectangle, $alias, $appBgDark, $label, "none", "true")
+!endprocedure
+
+!unquoted procedure PluginRef($alias, $label="none")
+Factory(rectangle, $alias, $pluginBgDark, $label, "none", "true")
+!endprocedure
+
+!unquoted procedure EngineRef($alias, $label="none")
+Factory(rectangle, $alias, $engineBgDark, $label, "none", "true")
+!endprocedure
+
+!unquoted procedure ServiceRef($alias, $label="none")
+Factory(rectangle, $alias, $serviceBgDark, $label, "none", "true")
+!endprocedure
+
+!unquoted procedure CloudRef($alias, $label="none")
+Factory(rectangle, $alias, $cloudBgDark, $label, "none", "true")
+!endprocedure
+
+' ================================
+' Data
+'
+!unquoted procedure Data($alias, $label="none")
+Factory(usecase, $alias, $bgLight, $label)
+!endprocedure
+
+!unquoted procedure AppData($alias, $label="none")
+Factory(usecase, $alias, $appBgLight, $label)
+!endprocedure
+
+!unquoted procedure PluginData($alias, $label="none")
+Factory(usecase, $alias, $pluginBgLight, $label)
+!endprocedure
+
+!unquoted procedure EngineData($alias, $label="none")
+Factory(usecase, $alias, $engineBgLight, $label)
+!endprocedure
+
+!unquoted procedure ServiceData($alias, $label="none")
+Factory(usecase, $alias, $serviceBgLight, $label)
+!endprocedure
+
+!unquoted procedure CloudData($alias, $label="none")
+Factory(usecase, $alias, $cloudBgLight, $label)
+!endprocedure
+
+' ================================
+' Wrap
+'
+!unquoted procedure Wrap($alias, $label="none")
+Factory(package, $alias, $bgLight, $label)
+!endprocedure
+
+!unquoted procedure AppWrap($alias, $label="none")
+Factory(package, $alias, $appBgLight, $label)
+!endprocedure
+
+!unquoted procedure PluginWrap($alias, $label="none")
+Factory(package, $alias, $pluginBgLight, $label)
+!endprocedure
+
+!unquoted procedure EngineWrap($alias, $label="none")
+Factory(package, $alias, $engineBgLight, $label)
+!endprocedure
+
+!unquoted procedure ServiceWrap($alias, $label="none")
+Factory(package, $alias, $serviceBgLight, $label)
+!endprocedure
+
+!unquoted procedure CloudWrap($alias, $label="none")
+Factory(package, $alias, $cloudBgLight, $label)
+!endprocedure
+
+' ================================
+' Pack - Dark Wrap
+'
+!unquoted procedure Pack($alias, $label="none")
+Factory(package, $alias, $bgDark, $label)
+!endprocedure
+
+!unquoted procedure AppPack($alias, $label="none")
+Factory(package, $alias, $appBgDark, $label)
+!endprocedure
+
+!unquoted procedure PluginPack($alias, $label="none")
+Factory(package, $alias, $pluginBgDark, $label)
+!endprocedure
+
+!unquoted procedure EnginePack($alias, $label="none")
+Factory(package, $alias, $engineBgDark, $label)
+!endprocedure
+
+!unquoted procedure ServicePack($alias, $label="none")
+Factory(package, $alias, $serviceBgDark, $label)
+!endprocedure
+
+!unquoted procedure CloudPack($alias, $label="none")
+Factory(package, $alias, $cloudBgDark, $label)
+!endprocedure
+
+' ================================
+' DB - Database Container
+'
+!unquoted procedure Db($alias, $label="none")
+Factory(database, $alias, $bgDark, $label)
+!endprocedure
+
+!unquoted procedure AppDb($alias, $label="none")
+Factory(database, $alias, $appBgDark, $label)
+!endprocedure
+
+!unquoted procedure PluginDb($alias, $label="none")
+Factory(database, $alias, $pluginBgDark, $label)
+!endprocedure
+
+!unquoted procedure EngineDb($alias, $label="none")
+Factory(database, $alias, $engineBgDark, $label)
+!endprocedure
+
+!unquoted procedure ServiceDb($alias, $label="none")
+Factory(database, $alias, $serviceBgDark, $label)
+!endprocedure
+
+!unquoted procedure CloudDb($alias, $label="none")
+Factory(database, $alias, $cloudBgDark, $label)
+!endprocedure
+
+' ================================
+' Layout Style
+'
+!$LAYOUT_TOP_DOWN = "top to bottom direction"
+!$LAYOUT_LEFT_RIGHT = "left to right direction"
+
+$LAYOUT_TOP_DOWN
+'$LAYOUT_LEFT_RIGHT
+
+skinparam line {
+  'type polyline
+  type ortho
+}
+
+skinparam ranksep 50
+skinparam nodesep 50  
+
+' ================================
+' Package Style
+'
+skinparam package {
+  Style Rectangle
+  BackgroundColor transparent
+  BorderColor $borderDark
+  BorderThickness 1
+  shadowing false
+  RoundCorner 25
+
+  BackgroundColor<<App>> $unityBgLight
+  BackgroundColor<<App2>> $unityBgDark
+  BackgroundColor<<Plugin>> $pluginBgLight
+  BackgroundColor<<Plugin2>> $pluginBgDark
+  BackgroundColor<<Service>> $serviceBgLight
+  BackgroundColor<<Service2>> $serviceBgDark
+  BackgroundColor<<Cloud>> $cloudBgLight
+  BackgroundColor<<Cloud2>> $cloudBgDark
+
+  ArrowColor black
+
+  sep 10
+}
+
+' ================================
+' Rectangle Style
+'
+skinparam rectangle {
+  BackgroundColor transparent
+  BorderColor $borderDark
+  BorderThickness 1
+  shadowing false
+  RoundCorner 15
+
+  ArrowColor black
+}
+
+' ================================
+' Usecase Style
+'
+skinparam usecase {
+  BackgroundColor transparent
+  BorderColor $borderDark
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Database Style
+'
+skinparam Database {
+  BackgroundColor transparent
+  BorderColor $borderDark
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+skinparam arrow {
+}
+
