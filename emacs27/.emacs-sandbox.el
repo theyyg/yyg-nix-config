@@ -64,11 +64,6 @@
 ;; Yes and No from http://aaronbedra.com/emacs.d/
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; Scroll bar, Tool bar, Menu bar from http://aaronbedra.com/emacs.d/
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-
 ;; Marking and Selecting from http://aaronbedra.com/emacs.d/
 (delete-selection-mode t)
 (transient-mark-mode t)
@@ -157,6 +152,12 @@
 ;; Quick window switching
 (global-set-key (kbd "C-.") #'other-window)
 (global-set-key (kbd "C-,") #'prev-window)
+;; Unbind org-mode "C-," and remap
+(add-hook 'org-agenda-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-," #'prev-window) )
+            )
+          )
 
 (defun prev-window ()
   (interactive)
@@ -307,7 +308,7 @@ for the current buffer's file name, and the line number at point."
 
 ;; Org-mode Python language support
 (add-to-list 'org-src-lang-modes
-  '("python" . python))
+			 '("python" . python))
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t)))
@@ -316,6 +317,8 @@ for the current buffer's file name, and the line number at point."
 ;; (Execute this in a scratch buffer to enable plantuml: C-x C-e )
 (setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/opt/bwood_arsenal/bin/plantuml.jar"))
 
+(add-to-list 'org-src-lang-modes
+			 '("plantuml" . plantuml))
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((plantuml . t)))
@@ -339,26 +342,63 @@ for the current buffer's file name, and the line number at point."
 ;; '((emacs-lisp . t) (ein . t))
 
 
-;; Sublimity - smooth scrolling
-(setq sublimity-scroll-weight 10
-      sublimity-scroll-drift-length 10
-      sublimity-attractive-centering-width 110)
 
-;(setq sublimity-scroll-vertical-frame-delay 0.01)
+;; Scroll bar, Tool bar, Menu bar from http://aaronbedra.com/emacs.d/
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
 
-;; scroll one line at a time (less "jumpy" than defaults)
-;(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-;(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+;; Smooth scrolling by pixel (emacs 26+)
+;; - https://emacs.stackexchange.com/questions/10354/smooth-mouse-scroll-for-inline-images
+;;; Scrolling.
+;; Good speed and allow scrolling through large images (pixel-scroll).
+;; Note: Scroll lags when point must be moved but increasing the number
+;;       of lines that point moves in pixel-scroll.el ruins large image
+;;       scrolling. So unfortunately I think we'll just have to live with
+;;       this.
+;(pixel-scroll-mode)
+;(setq pixel-dead-time 0) ; Never go back to the old scrolling behaviour.
+;(setq pixel-resolution-fine-flag t) ; Scroll by number of pixels instead of lines (t = frame-char-height pixels).
+;(setq mouse-wheel-scroll-amount '(3)) ; Distance in pixel-resolution to scroll each mouse wheel event.
+;(setq mouse-wheel-progressive-speed nil) ; Progressive speed is too fast for me.
+;(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+;(setq scroll-conservatively 50) ;; Scroll this many lines before jumping and centering (max 101)
+;(setq auto-window-vscroll t) ;; Scroll smoothly over tall lines (inline images)
 ;(setq scroll-step 1) ;; keyboard scroll one line at a time
-(setq scroll-conservatively 101)
-;(setq auto-window-vscroll nil)
-;(setq scroll-margin 1
-;      scroll-conservatively 10000
-;      scroll-up-aggressively 0.01
-;      scroll-down-aggressively 0.01)
-;(setq-default scroll-up-aggressively 0.01
-;              scroll-down-aggressively 0.01)
+;(setq scroll-margin 3) ;; Number of lines as margin at top of bottom after jump
+
+;; (setq scroll-up-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
+;; (setq scroll-down-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
+;; (setq scroll-preserve-screen-position 't) ;; Point preserved or moved when scrolling
+
+; Autosave every 500 typed characters
+;(setq auto-save-interval 500)
+
+;; Smooth scrolling by pixel (emacs 26+)
+;; - https://emacs.stackexchange.com/questions/10354/smooth-mouse-scroll-for-inline-images
+;;; Scrolling.
+;; Good speed and allow scrolling through large images (pixel-scroll).
+;; Note: Scroll lags when point must be moved but increasing the number
+;;       of lines that point moves in pixel-scroll.el ruins large image
+;;       scrolling. So unfortunately I think we'll just have to live with
+;;       this.
+;;(pixel-scroll-mode)
+;;(setq pixel-dead-time 0) ; Never go back to the old scrolling behaviour.
+;;(setq pixel-resolution-fine-flag 't) ; Scroll by number of pixels instead of lines (t = frame-char-height pixels).
+(setq mouse-wheel-scroll-amount '(1)) ; Distance in pixel-resolution to scroll each mouse wheel event.
+(setq mouse-wheel-progressive-speed 't) ; Progressive speed is too fast for me.
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+;(setq mouse-wheel-tilt-scroll 't) ;; scroll window under mouse
+(setq scroll-conservatively 40) ;; Scroll this many lines before jumping and centering (max 101)
+(setq auto-window-vscroll 't) ;; Scroll smoothly over tall lines (inline images)
+(setq scroll-step 1) ;; keyboard scroll one line at a time
+(setq scroll-margin 3) ;; Number of lines as margin at top of bottom after jump
+;; (setq scroll-up-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
+;; (setq scroll-down-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
+(setq scroll-preserve-screen-position 't) ;; Point preserved or moved when scrolling
+
+;(require 'sublimity)
+;(require 'sublimity-scroll) ;; Smooth scrolling when jumping
 
 ; Autosave every 500 typed characters
 ;(setq auto-save-interval 500)

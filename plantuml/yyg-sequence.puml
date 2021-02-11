@@ -64,7 +64,7 @@
 ' ================================
 ' Block
 '
-!unquoted procedure Block($e_alias, $label, $e_color=$border)
+!unquoted procedure Block($e_alias, $e_label, $e_color=$border)
 entity "$e_label" as $e_alias
 !endprocedure
 
@@ -127,7 +127,7 @@ end box
 !endprocedure
 
 !unquoted procedure AppWrap($name)
-box "$name"$appBg1
+box "$name" $appBg1
 !endprocedure
 
 !unquoted procedure PluginWrap($name)
@@ -173,7 +173,7 @@ end loop
 '
 skinparam sequence {
   LifeLineBorderColor $border1
-  LifeLineBackgroundColor $serviceBg2
+  LifeLineBackgroundColor $bg1
 
   ArrowColor black
 }

@@ -290,10 +290,10 @@ Factory(database, $alias, $cloudBgDark, $label)
 $LAYOUT_TOP_DOWN
 '$LAYOUT_LEFT_RIGHT
 
-skinparam line {
-  'type polyline
-  type ortho
-}
+'skinparam line {
+'  'type polyline
+'  type ortho
+'}
 
 skinparam ranksep 50
 skinparam nodesep 50  
