@@ -1,0 +1,1006 @@
+
+#+title: Yyg Emacs Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/init.el :mkdirp yes
+
+* Introduction
+
+This configuration uses ~org-mode~, ~org-babel~, and ~org-babel-tangle~ to generate the emacs configuration file ~init.el~.  Changes made directly in ~init.el~ will be overwritten by this configuration, so all changes should be done here.
+
+#+begin_src emacs-lisp
+
+;; !! WARNING !!
+;; init.el is generated from org-config/emacs.org.  Any changes to the emacs configuration 
+;;   should be done in that file.  Changes made directly in this file will be overwritten.
+
+#+end_src
+
+Major props and kudos go to =david at systemcrafters.cc= for providing the basis for this configuration.
+
+* Package Config
+
+This configuration uses package managers to install all the required packages when emacs is launched.  use-package has an easier interface than the internal emacs package manager, at least when it comes to automated installation and configuration.  
+
+The following section installs use-package through the built-in emacs package manager.
+
+#+begin_src emacs-lisp
+
+  ;; Initialize package sources
+  (require 'package)
+
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Initialize use-package on non-Linux platforms
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+
+#+end_src
+
+* System Config
+
+This emacs configuration is designed to work on multiple hardware systems over a variety of operating systems.
+
+ This sections identifies the configuration environment and provides variables for other sections to quickly determine which system it's running on.
+
+#+begin_src emacs-lisp
+
+;; TODO: set variables to easily identify the environment
+
+#+end_src
+
+* Basic UI Configuration
+
+This section configures basic UI settings that remove unneeded elements to make Emacs look a lot more minimal and modern.
+
+#+begin_src emacs-lisp
+
+  (setq inhibit-startup-message t)
+
+  (scroll-bar-mode -1)        ; Remove visible scrollbar
+  (tool-bar-mode -1)          ; Remove the toolbar
+  (tooltip-mode -1)           ; Remove tooltips
+  (set-fringe-mode 10)        ; Provide margins wrapped lines
+
+  (menu-bar-mode -1)          ; Remove the menu bar
+
+  ;; Set up the visible bell
+  (setq visible-bell t)
+
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+                  term-mode-hook
+                  shell-mode-hook
+                  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+#+end_src
+
+** Backup File Config
+
+
+#+begin_src emacs-lisp
+;; emacs built-in backup settings
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.saves"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)       ; use versioned backups
+
+;; Delete old copies
+(message "Deleting old backup files...")
+(let ((week (* 60 60 24 7))
+      (current (float-time (current-time))))
+  (dolist (file (directory-files temporary-file-directory t))
+    (when (and (backup-file-name-p file)
+               (> (- current (float-time (fifth (file-attributes file))))
+                  week))
+      (message "%s" file)
+      (delete-file file))))
+
+;; Set auto save files to an auto-save directory
+(setq auto-save-file-name-transforms
+          `((".*" ,(concat user-emacs-directory "auto-save") t))) 
+
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name
+                 (concat user-emacs-directory "backups")))))
+
+#+end_src
+
+** Font Configuration
+
+I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://fonts.google.com/specimen/Cantarell][Cantarell]] fonts for this configuration which will more than likely need to be installed on your machine.  Both can usually be found in the various Linux distro package managers or downloaded from the links above.
+
+#+begin_src emacs-lisp
+
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height 120)
+
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 120 :weight 'regular)
+
+#+end_src
+
+* Keybinding Configuration
+
+[[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key. 
+
+#+begin_src emacs-lisp
+
+  ;; Make ESC quit prompts
+  ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+  (use-package general
+    :config
+    (general-create-definer rune/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
+
+    (rune/leader-keys
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme")))
+
+#+end_src
+
+* UI Configuration
+
+** Color Theme
+
+[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many different Emacs modes.  Taking a look at the [[https://github.com/hlissner/emacs-doom-themes/tree/screenshots][screenshots]] might help you decide which one you like best.  You can also run =M-x counsel-load-theme= to choose between them easily.
+
+#+begin_src emacs-lisp
+
+  (use-package doom-themes
+    :init (load-theme 'doom-Iosvkem t)
+    :config
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+          doom-themes-enable-italic t) ; if nil, italics is universally disable
+    (doom-themes-visual-bell-config) ; Enable flashing mode-line on errors
+    ;; Enable custom neotree theme
+    (doom-themes-neotree-config) ; all-the-icons fonts must be installed!
+    ;; (doom-themes-org-config) ; Corrects (and improves) org-mode's native fontification.
+    )
+
+#+end_src
+
+** Better Modeline
+
+[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line configuration for Emacs.  The default configuration is quite good but you can check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
+
+*NOTE:* The first time you load your configuration on a new machine, you'll need to run `M-x all-the-icons-install-fonts` so that mode line icons display correctly.
+
+#+begin_src emacs-lisp
+
+(use-package all-the-icons)
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-height 15)))
+
+#+end_src
+
+** Text Scaling
+
+This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to design a transient key binding for quickly adjusting the scale of the text on screen.  We define a hydra that is bound to =C-s t s= and, once activated, =j= and =k= increase and decrease the text scale.  You can press any other key (or =f= specifically) to exit the transient key map.
+
+#+begin_src emacs-lisp
+
+  (use-package hydra)
+
+  (defhydra hydra-text-scale (:timeout 4)
+    "scale text"
+    ("j" text-scale-increase "in")
+    ("k" text-scale-decrease "out")
+    ("f" nil "finished" :exit t))
+
+  (rune/leader-keys
+    "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+#+end_src
+
+#+begin_src emacs-lisp
+
+;; Key bindings from http://aaronbedra.com/emacs.d/
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+
+#+end_src
+
+** Show/Hide Text
+
+#+begin_src emacs-lisp
+;; Collapse code block; code folding
+;; - 
+;; set-selective-display
+;; C-u xx C-$
+;; -
+;; hide-show
+;; C-c @ C-c
+(defun toggle-selective-display (column)
+  (interactive "P")
+  (set-selective-display
+   (or column
+	   (unless selective-display
+		 (1+ (current-column))))))
+
+(defun toggle-hiding (column)
+  (interactive "P")
+  (if hs-minor-mode
+	  (if (condition-case nil
+			  (hs-toggle-hiding)
+			(error t))
+		  (hs-show-all))
+	(toggle-selective-display column)))
+
+(load-library "hideshow")
+(global-set-key (kbd "C-=") 'toggle-hiding)
+(global-set-key (kbd "C-\\") 'toggle-selective-display)
+
+(add-hook 'c-mode-common-hook   'hs-minor-mode)
+(add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
+(add-hook 'java-mode-hook       'hs-minor-mode)
+(add-hook 'lisp-mode-hook       'hs-minor-mode)
+(add-hook 'perl-mode-hook       'hs-minor-mode)
+(add-hook 'sh-mode-hook         'hs-minor-mode)
+
+#+end_src
+*** Selective Display 
+*** 
+** Softwrap Lines of Text
+
+#+begin_src emacs-lisp
+;; Start-up with soft-wrap enabled
+(setq org-startup-truncated nil)  ; This works
+;; Toggle soft-wrap with super-q
+;; (define-key org-mode-map (kbd "M-q") 'toggle-truncate-lines)  ; This also works
+#+end_src
+
+** Short Prompt Responses
+
+#+begin_src emacs-lisp
+
+;; Yes and No from http://aaronbedra.com/emacs.d/
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+#+end_src
+
+** Marking and Selecting
+
+#+begin_src emacs-lisp
+
+;; Marking and Selecting from http://aaronbedra.com/emacs.d/
+(delete-selection-mode t)
+(transient-mark-mode t)
+(setq x-select-enable-clipboard t)
+
+#+end_src
+
+** Trailing Lines
+
+#+begin_src emacs-lisp
+
+;; Display Settings from http://aaronbedra.com/emacs.d/
+(setq-default indicate-empty-lines t)
+(when (not indicate-empty-lines)
+  (toggle-indicate-empty-lines))
+
+#+end_src
+
+** Indentation
+
+#+begin_src emacs-lisp
+
+;; Indentation from http://aaronbedra.com/emacs.d/
+(setq tab-width 4
+      indent-tabs-mode nil)
+
+#+end_src
+
+** Key Stroke Echo
+
+#+begin_src emacs-lisp
+
+;; Keystroke echo from http://aaronbedra.com/emacs.d/
+(setq echo-keystrokes 0.1) ;; show keystrokes after pause
+(setq use-dialog-box nil)  ;; disable y-or-n-p for mouse actions
+
+#+end_src
+
+** Window Management
+
+#+begin_src emacs-lisp
+;; Key bindings to resize windows from https://www.emacswiki.org/emacs/WindowResize
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>") 'shrink-window)
+(global-set-key (kbd "S-C-<up>") 'enlarge-window)
+
+;; Toggle Window Split Direction
+(defun window-split-toggle ()
+  "Toggle between horizontal and vertical split with two windows."
+  (interactive)
+  (if (> (length (window-list)) 2)
+      (error "Can't toggle with more than 2 windows!")
+    (let ((func (if (window-full-height-p)
+                    #'split-window-vertically
+                  #'split-window-horizontally)))
+      (delete-other-windows)
+      (funcall func)
+      (save-selected-window
+        (other-window 1)
+        (switch-to-buffer (other-buffer))))))
+#+end_src
+
+** Window Reuse
+
+#+begin_src emacs-lisp
+;;;---------------------------------------------------------------------
+;;; display-buffer
+
+;; The default behaviour of `display-buffer' is to always create a new
+;; window. As I normally use a large display sporting a number of
+;; side-by-side windows, this is a bit obnoxious.
+;;
+;; The code below will make Emacs reuse existing windows, with the
+;; exception that if have a single window open in a large display, it
+;; will be split horisontally.
+;; 
+(setq pop-up-windows t)
+(setq pop-up-frames nil)
+
+;; (defun my-display-buffer-function (buf not-this-window)
+;;   (if (and (not pop-up-frames)
+;;            (one-window-p)
+;;            (or not-this-window
+;;                (not (eq (window-buffer (selected-window)) buf)))
+;;            (> (frame-width) 162))
+;;       (split-window-horizontally))
+;;   ;; Note: Some modules sets `pop-up-windows' to t before calling
+;;   ;; `display-buffer' -- Why, oh, why!
+;;   (let ((display-buffer-function nil)
+;;         (pop-up-windows nil))
+;;     (display-buffer buf not-this-window)))
+;; 
+;; (setq display-buffer-function 'my-display-buffer-function)
+
+;; (setq split-height-threshold 61)
+;; (setq split-width-threshold 161)
+#+end_src
+** Window Switching
+
+#+begin_src emacs-lisp
+;; Quick window switching
+(global-set-key (kbd "C-.") #'other-window)
+(global-set-key (kbd "C-,") #'prev-window)
+;; Unbind org-mode "C-," and remap
+(add-hook 'org-agenda-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-," #'prev-window) )
+            )
+          )
+
+(defun prev-window ()
+  (interactive)
+  (other-window -1))
+#+end_src
+
+** Window Transparency
+
+#+begin_src emacs-lisp
+;;; Transparency
+
+;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
+;;(set-frame-parameter (selected-frame) 'alpha <both>)
+(set-frame-parameter (selected-frame) 'alpha '(100 . 90))
+(add-to-list 'default-frame-alist '(alpha . (100 . 90)))
+
+(defun toggle-transparency ()
+  (interactive)
+  (let ((alpha (frame-parameter nil 'alpha)))
+    (set-frame-parameter
+     nil 'alpha
+     (if (eql (cond ((numberp alpha) alpha)
+		    ((numberp (cdr alpha)) (cdr alpha))
+		    ;; Also handle undocumented (<active> <inactive>) form.
+		    ((numberp (cadr alpha)) (cadr alpha)))
+	      100)
+	 '(95 . 80) '(100 . 100)))))
+
+(global-set-key (kbd "C-c t") 'toggle-transparency)
+
+;; Set transparency of emacs
+(defun transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
+#+end_src
+** Revert or Clean Up Buffer
+
+#+begin_src emacs-lisp
+;; Revert the current buffer (useful when switching between git branches)
+(global-set-key (kbd "C-<escape>") 'revert-buffer)
+
+;; Clear the entire current buffer (useful for resetting the shell buffer to track new content)
+(global-set-key (kbd "C-M-<escape>") 'erase-buffer)
+#+end_src
+
+** Copy Cursor Location to Kill Ring
+
+#+begin_src emacs-lisp
+
+  ;; Copy file::line to kill ring for pasting into org link
+  (defun position-to-kill-ring ()
+    "Copy to the kill ring a string in the format \"file-name:line-number\"
+  for the current buffer's file name, and the line number at point."
+    (interactive)
+    (kill-new
+     (format "%s::%d" (buffer-file-name) (save-restriction
+                                           (widen) (line-number-at-pos)))))
+  (global-set-key (kbd "M-`") 'position-to-kill-ring)
+
+#+end_src
+
+** Autosave After Typing
+
+#+begin_src emacs-lisp
+; Autosave every 500 typed characters
+;(setq auto-save-interval 500)
+#+end_src
+
+* UX Configuration
+** Which Key
+
+[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to offer you all possible completions for the prefix.  For example, if you press =C-c= (hold control and press the letter =c=), a panel will appear at the bottom of the frame displaying all of the bindings under that prefix and which command they run.  This is very useful for learning the possible key bindings in the mode of your current buffer.
+
+#+begin_src emacs-lisp
+
+  (use-package which-key
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config
+    (setq which-key-show-early-on-C-h t)
+    (setq which-key-idle-delay 1)
+    (which-key-setup-side-window-right-bottom))
+
+#+end_src
+
+** Ivy and Counsel
+
+[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet powerful selection menu that appears when you open files, switch buffers, and for many other tasks in Emacs.  Counsel is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which provide useful commands for each of the default completion commands.
+
+[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each item.
+
+#+begin_src emacs-lisp
+
+    (use-package ivy
+      :diminish
+      :bind (("C-s" . swiper)
+             :map ivy-minibuffer-map
+             ("TAB" . ivy-alt-done)
+             ("C-l" . ivy-alt-done)
+             ("C-j" . ivy-next-line)
+             ("C-k" . ivy-previous-line)
+             :map ivy-switch-buffer-map
+             ("C-k" . ivy-previous-line)
+             ("C-l" . ivy-done)
+             ("C-d" . ivy-switch-buffer-kill)
+             :map ivy-reverse-i-search-map
+             ("C-k" . ivy-previous-line)
+             ("C-d" . ivy-reverse-i-search-kill))
+      :config
+      (ivy-mode 1))
+
+    (use-package ivy-rich
+      :init
+      (ivy-rich-mode 1))
+
+    (use-package counsel
+      :bind (("C-M-j" . 'counsel-switch-buffer)
+             :map minibuffer-local-map
+             ("C-r" . 'counsel-minibuffer-history))
+      :config
+      (counsel-mode 1))
+
+#+end_src
+
+** Helpful Help Commands
+
+[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-= command buffers.  For example, if you use =describe-function=, you will not only get the documentation about the function, you will also see the source code of the function and where it gets used in other places in the Emacs configuration.  It is very useful for figuring out how things work in Emacs.
+
+#+begin_src emacs-lisp
+
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
+
+#+end_src
+
+* Org Mode
+
+[[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
+
+** Better Font Faces
+
+The =efs/org-font-setup= function configures various text faces to tweak the sizes of headings and use variable width fonts in most cases so that it looks more like we're editing a document in =org-mode=.  We switch back to fixed width (monospace) fonts for code blocks and tables so that they display correctly.
+
+#+begin_src emacs-lisp
+
+  (defun efs/org-font-setup ()
+    ;; Replace list hyphen with dot
+    (font-lock-add-keywords 'org-mode
+                            '(("^ *\\([-]\\) "
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+    ;; Set faces for heading levels
+    (dolist (face '((org-level-1 . 1.2)
+                    (org-level-2 . 1.1)
+                    (org-level-3 . 1.05)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.1)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
+      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+#+end_src
+
+** Basic Config
+
+This section contains the basic configuration for =org-mode= plus the configuration for Org agendas and capture templates.  There's a lot to unpack in here so I'd recommend watching the videos for [[https://youtu.be/VcgjTEa0kU4][Part 5]] and [[https://youtu.be/PNE-mgkZ6HM][Part 6]] for a full explanation.
+
+#+begin_src emacs-lisp
+
+  (defun efs/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (visual-line-mode 1))
+
+  (use-package org
+    :hook (org-mode . efs/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾")
+
+    (setq org-agenda-start-with-log-mode t)
+    (setq org-log-done 'time)
+    (setq org-log-into-drawer t)
+
+    (setq org-agenda-files
+          '("~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org"
+            "~/Projects/Code/emacs-from-scratch/OrgFiles/Habits.org"
+            "~/Projects/Code/emacs-from-scratch/OrgFiles/Birthdays.org"))
+
+    (require 'org-habit)
+    (add-to-list 'org-modules 'org-habit)
+    (setq org-habit-graph-column 60)
+
+    (setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+        (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+    (setq org-refile-targets
+      '(("Archive.org" :maxlevel . 1)
+        ("Tasks.org" :maxlevel . 1)))
+
+    ;; Save Org buffers after refiling!
+    (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+    (setq org-tag-alist
+      '((:startgroup)
+         ; Put mutually exclusive tags here
+         (:endgroup)
+         ("@errand" . ?E)
+         ("@home" . ?H)
+         ("@work" . ?W)
+         ("agenda" . ?a)
+         ("planning" . ?p)
+         ("publish" . ?P)
+         ("batch" . ?b)
+         ("note" . ?n)
+         ("idea" . ?i)))
+
+    ;; Configure custom agenda views
+    (setq org-agenda-custom-commands
+     '(("d" "Dashboard"
+       ((agenda "" ((org-deadline-warning-days 7)))
+        (todo "NEXT"
+          ((org-agenda-overriding-header "Next Tasks")))
+        (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+      ("n" "Next Tasks"
+       ((todo "NEXT"
+          ((org-agenda-overriding-header "Next Tasks")))))
+
+      ("W" "Work Tasks" tags-todo "+work-email")
+
+      ;; Low-effort next actions
+      ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+       ((org-agenda-overriding-header "Low Effort Tasks")
+        (org-agenda-max-todos 20)
+        (org-agenda-files org-agenda-files)))
+
+      ("w" "Workflow Status"
+       ((todo "WAIT"
+              ((org-agenda-overriding-header "Waiting on External")
+               (org-agenda-files org-agenda-files)))
+        (todo "REVIEW"
+              ((org-agenda-overriding-header "In Review")
+               (org-agenda-files org-agenda-files)))
+        (todo "PLAN"
+              ((org-agenda-overriding-header "In Planning")
+               (org-agenda-todo-list-sublevels nil)
+               (org-agenda-files org-agenda-files)))
+        (todo "BACKLOG"
+              ((org-agenda-overriding-header "Project Backlog")
+               (org-agenda-todo-list-sublevels nil)
+               (org-agenda-files org-agenda-files)))
+        (todo "READY"
+              ((org-agenda-overriding-header "Ready for Work")
+               (org-agenda-files org-agenda-files)))
+        (todo "ACTIVE"
+              ((org-agenda-overriding-header "Active Projects")
+               (org-agenda-files org-agenda-files)))
+        (todo "COMPLETED"
+              ((org-agenda-overriding-header "Completed Projects")
+               (org-agenda-files org-agenda-files)))
+        (todo "CANC"
+              ((org-agenda-overriding-header "Cancelled Projects")
+               (org-agenda-files org-agenda-files)))))))
+
+    (setq org-capture-templates
+      `(("t" "Tasks / Projects")
+        ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
+             "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+        ("j" "Journal Entries")
+        ("jj" "Journal" entry
+             (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+             ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+             :clock-in :clock-resume
+             :empty-lines 1)
+        ("jm" "Meeting" entry
+             (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+             :clock-in :clock-resume
+             :empty-lines 1)
+
+        ("w" "Workflows")
+        ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+        ("m" "Metrics Capture")
+        ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
+         "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+
+    (define-key global-map (kbd "C-c j")
+      (lambda () (interactive) (org-capture nil "jj")))
+
+    (efs/org-font-setup))
+
+#+end_src
+
+*** Nicer Heading Bullets
+
+[[https://github.com/sabof/org-bullets][org-bullets]] replaces the heading stars in =org-mode= buffers with nicer looking characters that you can control.  Another option for this is [[https://github.com/integral-dw/org-superstar-mode][org-superstar-mode]] which we may cover in a later video.
+
+#+begin_src emacs-lisp
+
+  (use-package org-bullets
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+#+end_src
+
+*** Center Org Buffers
+
+We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.  This is really a matter of personal preference so you can remove the block below if you don't like the behavior.
+
+#+begin_src emacs-lisp
+
+  (defun efs/org-mode-visual-fill ()
+    (setq visual-fill-column-width 100
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :hook (org-mode . efs/org-mode-visual-fill))
+
+#+end_src
+
+*** Display Images
+
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook 'org-display-inline-images)
+#+end_src
+
+** Configure Babel Languages
+
+To execute or export code in =org-mode= code blocks, you'll need to set up =org-babel-load-languages= for each language you'd like to use.  [[https://orgmode.org/worg/org-contrib/babel/languages.html][This page]] documents all of the languages that you can use with =org-babel=.
+
+*** PlantUML Config
+#+begin_src emacs-lisp
+  ;; plantUML for org-mode
+  (use-package plantuml-mode
+    :init
+    (setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/opt/bwood_arsenal/bin/plantuml.jar"))
+    :config
+    (defun init-plantuml()
+      (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+      (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+      (setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/opt/bwood_arsenal/bin/plantuml.jar"))
+      )
+    (add-hook 'org-mode-hook 'init-plantuml)
+    )
+  ;; (Execute this in a scratch buffer to enable plantuml: C-x C-e )
+
+
+
+
+#+end_src
+
+*** Other Languages
+// #+begin_src emacs-lisp
+  (add-to-list 'org-src-lang-modes
+               '("python" . python))
+  (add-to-list 'org-src-lang-modes
+               '("plantuml" . plantuml))
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (C . t)
+     (plantuml . t)
+     (python . t)))
+
+  (push '("conf-unix" . conf-unix) org-src-lang-modes)
+// #+end_src
+
+** Auto-tangle Configuration Files
+
+This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is the Emacs.org file you're looking at right now, and if so, automatically exports the configuration here to the associated output files.
+
+#+begin_src emacs-lisp
+
+  ;; Automatically tangle our Emacs.org config file when we save it
+  (defun efs/org-babel-tangle-config ()
+    (when (string-equal (buffer-file-name)
+                        (expand-file-name "~/opt/yyg-nix-config/org-config/emacs.org"))
+      ;; Dynamic scoping to the rescue
+      (let ((org-confirm-babel-evaluate nil))
+        (org-babel-tangle))))
+
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+#+end_src
+
+* Development
+
+** Projectile
+
+[[https://projectile.mx/][Projectile]] is a project management library for Emacs which makes it a lot easier to navigate around code projects for various languages.  Many packages integrate with Projectile so it's a good idea to have it installed even if you don't use its commands directly.
+
+#+begin_src emacs-lisp
+
+  (use-package projectile
+    :diminish projectile-mode
+    :config (projectile-mode)
+    :custom ((projectile-completion-system 'ivy))
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :init
+    ;; NOTE: Set this to the folder where you keep your Git repos!
+    (when (file-directory-p "~/dev")
+      (setq projectile-project-search-path '("~/dev")))
+    (setq projectile-switch-project-action #'projectile-dired))
+
+  (use-package counsel-projectile
+    :config (counsel-projectile-mode))
+
+#+end_src
+
+** Magit
+
+[[https://magit.vc/][Magit]] is the best Git interface I've ever used.  Common Git operations are easy to execute quickly using Magit's command panel system.
+
+#+begin_src emacs-lisp
+
+  (use-package magit
+    :custom
+    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+  ;; NOTE: Make sure to configure a GitHub token before using this package!
+  ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
+  ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
+  ;; (use-package forge)
+
+
+  (global-set-key (kbd "M-RET") 'magit-diff-visit-file-other-frame)
+#+end_src
+
+** Matching Parens
+
+~show-paren-mode~ highlights parenthesis at the cursor with its matching parenthesis.
+#+begin_src emacs-lisp
+(show-paren-mode t)        ;; 
+#+end_src
+
+** Rainbow Delimiters
+
+[[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] is useful in programming modes because it colorizes nested parentheses and brackets according to their nesting depth.  This makes it a lot easier to visually match parentheses in Emacs Lisp code without having to count them yourself.
+
+#+begin_src emacs-lisp
+
+;;(use-package rainbow-delimiters
+;;  :hook (prog-mode . rainbow-delimiters-mode))
+
+#+end_src
+
+** C/C++
+
+*** Style
+
+#+begin_src emacs-lisp
+;; C-style
+(setq c-default-style "google"
+      c-basic-offset 4)
+#+end_src
+
+*** Quick Comment
+#+begin_src  emacs-lisp
+
+;; Key bindings from http://aaronbedra.com/emacs.d/
+(global-set-key (kbd "C-;") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "C-c C-k") 'compile)
+
+#+end_src
+
+*** C Indenting
+
+#+begin_src emacs-lisp
+;; C indenting stuff
+(defun yyg/indent-for-c-hook ()
+  ;; (setq c-default-style "bsd" c-basic-offset 4)
+
+  ;; my customizations for all of c-mode, c++-mode, objc-mode, java-mode
+  (c-set-offset 'substatement-open 0)
+  ;; other customizations can go here
+
+  (setq c++-tab-always-indent t)
+  (setq c-basic-offset 4)                  ;; Default is 2  ;; google-c-style.el is overriding this back to 2
+  (setq c-indent-level 4)                  ;; Default is 2
+
+  (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60))
+  (setq tab-width 4)
+
+  (hl-line-mode t)   ;; highlight line mode
+  (hs-minor-mode t)  ;; hide-show minor mode
+  (lsp)  ;  LSP connection for auto-complete and code navigation
+  )
+
+(add-hook 'c-mode-common-hook 'yyg/indent-for-c-hook)
+(add-hook 'c++-mode-hook 'yyg/indent-for-c-hook)
+
+;; (add-hook 'c-mode-hook
+;; 	   (lambda () (modify-syntax-table ?\' ".")))
+#+end_src
+
+** Javascript
+
+*** JS Indentation
+
+#+begin_src emacs-lisp
+;; JS indenting stuff
+(defun my-js-mode-hook ()
+  (setq indent-tabs-mode nil)  ; use spaces only if nil
+  )
+
+(add-hook 'js-mode-hook 'my-js-mode-hook)
+#+end_src
+** Python
+*** Ipython Notebook
+
+#+begin_src emacs-lisp
+
+;; Emacs Ipython Notebook (in org-mode)
+;; '((emacs-lisp . t) (ein . t))
+
+#+end_src
+* Sandbox 
+
+The sandbox is my area to try out new emacs packages or lisp snippets.
+** Smooth Scrolling
+
+#+begin_src emacs-lisp
+;; Smooth scrolling by pixel (emacs 26+)
+;; - https://emacs.stackexchange.com/questions/10354/smooth-mouse-scroll-for-inline-images
+;;; Scrolling.
+;; Good speed and allow scrolling through large images (pixel-scroll).
+;; Note: Scroll lags when point must be moved but increasing the number
+;;       of lines that point moves in pixel-scroll.el ruins large image
+;;       scrolling. So unfortunately I think we'll just have to live with
+;;       this.
+;(pixel-scroll-mode)
+;(setq pixel-dead-time 0) ; Never go back to the old scrolling behaviour.
+;(setq pixel-resolution-fine-flag t) ; Scroll by number of pixels instead of lines (t = frame-char-height pixels).
+;(setq mouse-wheel-scroll-amount '(3)) ; Distance in pixel-resolution to scroll each mouse wheel event.
+;(setq mouse-wheel-progressive-speed nil) ; Progressive speed is too fast for me.
+;(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+;(setq scroll-conservatively 50) ;; Scroll this many lines before jumping and centering (max 101)
+;(setq auto-window-vscroll t) ;; Scroll smoothly over tall lines (inline images)
+;(setq scroll-step 1) ;; keyboard scroll one line at a time
+;(setq scroll-margin 3) ;; Number of lines as margin at top of bottom after jump
+
+;; (setq scroll-up-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
+;; (setq scroll-down-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
+;; (setq scroll-preserve-screen-position 't) ;; Point preserved or moved when scrolling
+
+; Autosave every 500 typed characters
+;(setq auto-save-interval 500)
+
+;; Smooth scrolling by pixel (emacs 26+)
+;; - https://emacs.stackexchange.com/questions/10354/smooth-mouse-scroll-for-inline-images
+;;; Scrolling.
+;; Good speed and allow scrolling through large images (pixel-scroll).
+;; Note: Scroll lags when point must be moved but increasing the number
+;;       of lines that point moves in pixel-scroll.el ruins large image
+;;       scrolling. So unfortunately I think we'll just have to live with
+;;       this.
+;;(pixel-scroll-mode)
+;;(setq pixel-dead-time 0) ; Never go back to the old scrolling behaviour.
+;;(setq pixel-resolution-fine-flag 't) ; Scroll by number of pixels instead of lines (t = frame-char-height pixels).
+(setq mouse-wheel-scroll-amount '(1)) ; Distance in pixel-resolution to scroll each mouse wheel event.
+(setq mouse-wheel-progressive-speed 't) ; Progressive speed is too fast for me.
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+;(setq mouse-wheel-tilt-scroll 't) ;; scroll window under mouse
+(setq scroll-conservatively 40) ;; Scroll this many lines before jumping and centering (max 101)
+(setq auto-window-vscroll 't) ;; Scroll smoothly over tall lines (inline images)
+(setq scroll-step 1) ;; keyboard scroll one line at a time
+(setq scroll-margin 3) ;; Number of lines as margin at top of bottom after jump
+;; (setq scroll-up-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
+;; (setq scroll-down-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
+(setq scroll-preserve-screen-position 't) ;; Point preserved or moved when scrolling
+
+#+end_src
+
+** Sublimity Smooth Scrolling
+
+#+begin_src emacs-lisp
+;(require 'sublimity)
+;(require 'sublimity-scroll) ;; Smooth scrolling when jumping
+#+end_src
