@@ -6,7 +6,7 @@
 
 sleep 1
 DISPLAY=":0.0"
-HOME=/home/MAGICLEAP/bwood/
+HOME=~
 XAUTHORITY=$HOME/.Xauthority
 export DISPLAY XAUTHORITY HOME
 rzrkb_id=`xinput -list | grep -i 'Razer BlackWidow Ultimate' | grep -o id=[0-9]. | grep -o [0-9]. | head -1`

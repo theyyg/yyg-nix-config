@@ -8,7 +8,7 @@ This configuration uses ~org-mode~, ~org-babel~, and ~org-babel-tangle~ to gener
 #+begin_src emacs-lisp
 
 ;; !! WARNING !!
-;; init.el is generated from org-config/emacs.org.  Any changes to the emacs configuration 
+;; init.el is generated from org-config/emacs.org.  Any changes to the emacs configuration
 ;;   should be done in that file.  Changes made directly in this file will be overwritten.
 
 #+end_src
@@ -17,7 +17,7 @@ Major props and kudos go to =david at systemcrafters.cc= for providing the basis
 
 * Package Config
 
-This configuration uses package managers to install all the required packages when emacs is launched.  use-package has an easier interface than the internal emacs package manager, at least when it comes to automated installation and configuration.  
+This configuration uses package managers to install all the required packages when emacs is launched.  use-package has an easier interface than the internal emacs package manager, at least when it comes to automated installation and configuration.
 
 The following section installs use-package through the built-in emacs package manager.
 
@@ -28,7 +28,7 @@ The following section installs use-package through the built-in emacs package ma
 
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			   ("org" . "https://orgmode.org/elpa/")))
-					  ; ("elpa" . "https://elpa.gnu.org/packages/")))
+			   ;; ("elpa" . "https://elpa.gnu.org/packages/")))
 
   (package-initialize)
   (unless package-archive-contents
@@ -57,7 +57,7 @@ This emacs configuration is designed to work on multiple hardware systems over a
 
 * Keybinding Configuration
 
-[[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key. 
+[[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key.
 
 #+begin_src emacs-lisp
 
@@ -76,70 +76,75 @@ This emacs configuration is designed to work on multiple hardware systems over a
       "tt" '(counsel-load-theme :which-key "choose theme")))
 
 #+end_src
+
 * Basic UI Configuration
 
 This section configures basic UI settings that remove unneeded elements to make Emacs look a lot more minimal and modern.
 
 #+begin_src emacs-lisp
 
-  (setq inhibit-startup-message t)
+   (setq inhibit-startup-message t)
 
-  (scroll-bar-mode -1)        ; Remove visible scrollbar
-  (tool-bar-mode -1)          ; Remove the toolbar
-  (tooltip-mode -1)           ; Remove tooltips
-  (set-fringe-mode 10)        ; Provide margins wrapped lines
+   (scroll-bar-mode -1)        ; Remove visible scrollbar
+   (tool-bar-mode -1)          ; Remove the toolbar
+   (tooltip-mode -1)           ; Remove tooltips
+   (set-fringe-mode 10)        ; Provide margins wrapped lines
 
-  (menu-bar-mode -1)          ; Remove the menu bar
+   (menu-bar-mode -1)          ; Remove the menu bar
 
-  ;; Set up the visible bell
-  (setq visible-bell t)
+   ;; Set up the visible bell
+   (setq visible-bell t)
 
-  (column-number-mode)
-  (global-display-line-numbers-mode t)
+   (column-number-mode)
+   (global-display-line-numbers-mode t)
 
-  ;; Disable line numbers for some modes
-  (dolist (mode '(org-mode-hook
-                  term-mode-hook
-                  shell-mode-hook
-                  eshell-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+   ;; Disable line numbers for some modes
+   (dolist (mode '(org-mode-hook
+                   treemacs-mode-hook
+                   term-mode-hook
+                   shell-mode-hook
+                   eshell-mode-hook))
+     (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+  ;; Simple contextual grep
+  (setq grep-command "grep --color -RinH -B 2 -A 2 -e ")
 
 #+end_src
 
-** Backup File Config
-
+* Backup File Config
 
 #+begin_src emacs-lisp
-;; emacs built-in backup settings
-(setq
-   backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.saves"))    ; don't litter my fs tree
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)       ; use versioned backups
+  ;; emacs built-in backup settings
+  (setq
+     backup-by-copying t      ; don't clobber symlinks
+     backup-directory-alist
+      '(("." . "~/.saves"))    ; don't litter my fs tree
+     delete-old-versions t
+     kept-new-versions 6
+     kept-old-versions 2
+     version-control t)       ; use versioned backups
 
-;; Delete old copies
-(message "Deleting old backup files...")
-(let ((week (* 60 60 24 7))
-      (current (float-time (current-time))))
-  (dolist (file (directory-files temporary-file-directory t))
-    (when (and (backup-file-name-p file)
-               (> (- current (float-time (fifth (file-attributes file))))
-                  week))
-      (message "%s" file)
-      (delete-file file))))
+  ;; Delete old copies
+  (message "Deleting old backup files...")
+  (let ((week (* 60 60 24 7))
+	(current (float-time (current-time))))
+    (dolist (file (directory-files temporary-file-directory t))
+      (when (and (backup-file-name-p file)
+		 (> (- current (float-time (fifth (file-attributes file))))
+		    week))
+	(message "%s" file)
+	(delete-file file))))
 
-;; Set auto save files to an auto-save directory
-(setq auto-save-file-name-transforms
-          `((".*" ,(concat user-emacs-directory "auto-save") t))) 
+  ;; Set auto save files to an auto-save directory
+  (setq auto-save-file-name-transforms
+	    `((".*" ,(concat user-emacs-directory "auto-save") t)))
 
-(setq backup-directory-alist
-      `(("." . ,(expand-file-name
-                 (concat user-emacs-directory "backups")))))
+  (setq backup-directory-alist
+	`(("." . ,(expand-file-name
+		   (concat user-emacs-directory "backups")))))
 
 #+end_src
+
 
 ** Font Configuration
 
@@ -147,13 +152,13 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 #+begin_src emacs-lisp
 
-(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+  (set-face-attribute 'default nil :font "Fira Code Retina" :height 110)
 
-;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height 120)
+  ;; Set the fixed pitch face
+  (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height 110)
 
-;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 120 :weight 'regular)
+  ;; Set the variable pitch face
+  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 110 :weight 'regular)
 
 #+end_src
 
@@ -178,6 +183,7 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 #+end_src
 
+
 ** Better Modeline
 
 [[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line configuration for Emacs.  The default configuration is quite good but you can check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
@@ -186,11 +192,11 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 #+begin_src emacs-lisp
 
-(use-package all-the-icons)
+  (use-package all-the-icons)
 
-(use-package doom-modeline
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
+  (use-package doom-modeline
+    :init (doom-modeline-mode 1)
+    :custom ((doom-modeline-height 15)))
 
 #+end_src
 
@@ -198,7 +204,7 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to design a transient key binding for quickly adjusting the scale of the text on screen.  We define a hydra that is bound to =C-s t s= and, once activated, =j= and =k= increase and decrease the text scale.  You can press any other key (or =f= specifically) to exit the transient key map.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/sandbox.el
 
   (use-package hydra)
 
@@ -215,11 +221,12 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+begin_src emacs-lisp
 
-;; Key bindings from http://aaronbedra.com/emacs.d/
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
+  ;; Key bindings from http://aaronbedra.com/emacs.d/
+  (global-set-key (kbd "C-+") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
 
 #+end_src
+
 
 ** Which Key
 
@@ -233,9 +240,11 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
     :config
     (setq which-key-show-early-on-C-h t)
     (setq which-key-idle-delay 1)
-    (which-key-setup-side-window-right-bottom))
+    ;;(which-key-setup-side-window-right-bottom)
+    )
 
 #+end_src
+
 
 ** Ivy and Counsel
 
@@ -245,34 +254,41 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+begin_src emacs-lisp
 
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-	   :map ivy-minibuffer-map
-	   ("TAB" . ivy-alt-done)
-	   ("C-l" . ivy-alt-done)
-	   ("C-j" . ivy-next-line)
-	   ("C-k" . ivy-previous-line)
-	   :map ivy-switch-buffer-map
-	   ("C-k" . ivy-previous-line)
-	   ("C-l" . ivy-done)
-	   ("C-d" . ivy-switch-buffer-kill)
-	   :map ivy-reverse-i-search-map
-	   ("C-k" . ivy-previous-line)
-	   ("C-d" . ivy-reverse-i-search-kill))
-    :config
-    (ivy-mode 1))
+      (use-package ivy
+        :diminish
+        :bind ( ("C-c s" . swiper)
+               :map ivy-minibuffer-map
+               ;; ("<tab>" . ivy-partial)
+               ("C-l" . ivy-alt-done)
+               ("C-j" . ivy-next-line)
+               ("C-k" . ivy-previous-line)
+               :map ivy-switch-buffer-map
+               ("C-k" . ivy-previous-line)
+               ("C-l" . ivy-done)
+               ("C-d" . ivy-switch-buffer-kill)
+               :map ivy-reverse-i-search-map
+               ("C-k" . ivy-previous-line)
+               ("C-d" . ivy-reverse-i-search-kill))
+        :config
+        (ivy-mode 1))
 
-  (use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
+      (use-package ivy-rich
+        :init
+        (ivy-rich-mode 1))
 
   (use-package counsel
-    :bind (("C-M-j" . 'counsel-switch-buffer)
-	   :map minibuffer-local-map
-	   ("C-r" . 'counsel-minibuffer-history))
+    :demand t
+    :bind (("M-x" . counsel-M-x)
+           ("C-x b" . counsel-ibuffer)
+           ("C-x C-f" . counsel-find-file)
+           ;; ("C-M-j" . counsel-switch-buffer)
+           ("C-M-l" . counsel-imenu)
+           :map minibuffer-local-map
+           ("C-r" . 'counsel-minibuffer-history))
+    :custom
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
     :config
-    (counsel-mode 1))
+    (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 
 #+end_src
 
@@ -294,46 +310,49 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+end_src
 
+
 ** Show/Hide Text
 
 #+begin_src emacs-lisp
-;; Collapse code block; code folding
-;; - 
-;; set-selective-display
-;; C-u xx C-$
-;; -
-;; hide-show
-;; C-c @ C-c
-(defun toggle-selective-display (column)
-  (interactive "P")
-  (set-selective-display
-   (or column
-	   (unless selective-display
-		 (1+ (current-column))))))
+  ;; Collapse code block; code folding
+  ;; -
+  ;; set-selective-display
+  ;; C-u xx C-$
+  ;; -
+  ;; hide-show
+  ;; C-c @ C-c
+  (defun toggle-selective-display (column)
+    (interactive "P")
+    (set-selective-display
+     (or column
+	 (unless selective-display
+	   (1+ (current-column))))))
 
-(defun toggle-hiding (column)
-  (interactive "P")
-  (if hs-minor-mode
-	  (if (condition-case nil
-			  (hs-toggle-hiding)
-			(error t))
-		  (hs-show-all))
-	(toggle-selective-display column)))
+  (defun toggle-hiding (column)
+    (interactive "P")
+    (if hs-minor-mode
+	(if (condition-case nil
+		(hs-toggle-hiding)
+	      (error t))
+	    (hs-show-all))
+      (toggle-selective-display column)))
 
-(load-library "hideshow")
-(global-set-key (kbd "C-=") 'toggle-hiding)
-(global-set-key (kbd "C-\\") 'toggle-selective-display)
+  (load-library "hideshow")
+  (global-set-key (kbd "C-=") 'toggle-hiding)
+  (global-set-key (kbd "C-\\") 'toggle-selective-display)
 
-(add-hook 'c-mode-common-hook   'hs-minor-mode)
-(add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
-(add-hook 'java-mode-hook       'hs-minor-mode)
-(add-hook 'lisp-mode-hook       'hs-minor-mode)
-(add-hook 'perl-mode-hook       'hs-minor-mode)
-(add-hook 'sh-mode-hook         'hs-minor-mode)
+  (add-hook 'c-mode-common-hook   'hs-minor-mode)
+  (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
+  (add-hook 'java-mode-hook       'hs-minor-mode)
+  (add-hook 'lisp-mode-hook       'hs-minor-mode)
+  (add-hook 'perl-mode-hook       'hs-minor-mode)
+  (add-hook 'sh-mode-hook         'hs-minor-mode)
 
 #+end_src
-*** Selective Display 
-*** 
+
+
+*** Selective Display
+*** Another thing
 ** Softwrap Lines of Text
 
 #+begin_src emacs-lisp
@@ -352,6 +371,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+end_src
 
+
 ** Marking and Selecting
 
 #+begin_src emacs-lisp
@@ -362,6 +382,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 (setq x-select-enable-clipboard t)
 
 #+end_src
+
 
 ** Trailing Lines
 
@@ -378,9 +399,11 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+begin_src emacs-lisp
 
-;; Indentation from http://aaronbedra.com/emacs.d/
-(setq tab-width 4
-      indent-tabs-mode nil)
+  ;; Indentation from http://aaronbedra.com/emacs.d/
+  (setq-default indent-tabs-mode nil)
+  (setq indent-tabs-mode nil
+        c-basic-indent 4
+        tab-width 4)
 
 #+end_src
 
@@ -419,6 +442,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
         (switch-to-buffer (other-buffer))))))
 #+end_src
 
+
 ** Window Reuse
 
 #+begin_src emacs-lisp
@@ -432,7 +456,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 ;; The code below will make Emacs reuse existing windows, with the
 ;; exception that if have a single window open in a large display, it
 ;; will be split horisontally.
-;; 
+;;
 (setq pop-up-windows t)
 (setq pop-up-frames nil)
 
@@ -448,12 +472,13 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 ;;   (let ((display-buffer-function nil)
 ;;         (pop-up-windows nil))
 ;;     (display-buffer buf not-this-window)))
-;; 
+;;
 ;; (setq display-buffer-function 'my-display-buffer-function)
 
 ;; (setq split-height-threshold 61)
 ;; (setq split-width-threshold 161)
 #+end_src
+
 ** Window Switching
 
 #+begin_src emacs-lisp
@@ -471,6 +496,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
   (interactive)
   (other-window -1))
 #+end_src
+
 
 ** Window Transparency
 
@@ -512,6 +538,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 (global-set-key (kbd "C-M-<escape>") 'erase-buffer)
 #+end_src
 
+
 ** Copy Cursor Location to Kill Ring
 
 #+begin_src emacs-lisp
@@ -528,6 +555,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+end_src
 
+
 ** Autosave After Typing
 
 #+begin_src emacs-lisp
@@ -537,7 +565,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 ** Ligature Support
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/sandbox.el
 
   (use-package ligature
   ;; There's currently no melpa support to use the repo
@@ -566,6 +594,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
     ;; per mode with `ligature-mode'.
     (global-ligature-mode t))
 #+end_src
+
 * UX Configuration
 * Org Mode
 
@@ -611,132 +640,145 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 #+begin_src emacs-lisp
 
-  (defun efs/org-mode-setup ()
-    (org-indent-mode)
-    (variable-pitch-mode 1)
-    (visual-line-mode 1))
+    (defun efs/org-mode-setup ()
+      (org-indent-mode)
+      (variable-pitch-mode 1)
+      (visual-line-mode 1))
 
-  (use-package org
-    :hook (org-mode . efs/org-mode-setup)
-    :config
-    (setq org-ellipsis " ▾")
+    (use-package org
+      :mode (("\\.org$" . org-mode))
+      :ensure org-plus-contrib
+      :hook (org-mode . efs/org-mode-setup)
+      :bind ( ;; insert global bindings here
+             :map org-mode-map
+                  ("C-," . 'prev-window))
+      :config
+      (setq org-ellipsis " ▾"
+            org-hide-emphasis-markers t)
 
-    (setq org-agenda-start-with-log-mode t)
-    (setq org-log-done 'time)
-    (setq org-log-into-drawer t)
+      (setq org-agenda-start-with-log-mode t)
+      (setq org-log-done 'time)
+      (setq org-log-into-drawer t)
 
-    (setq org-agenda-files
-          '("~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org"
-            "~/Projects/Code/emacs-from-scratch/OrgFiles/Habits.org"
-            "~/Projects/Code/emacs-from-scratch/OrgFiles/Birthdays.org"))
+      ;(setq org-agenda-files
+      ;      '("~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org"
+      ;        "~/Projects/Code/emacs-from-scratch/OrgFiles/Habits.org"
+      ;        "~/Projects/Code/emacs-from-scratch/OrgFiles/Birthdays.org"))
 
-    (require 'org-habit)
-    (add-to-list 'org-modules 'org-habit)
-    (setq org-habit-graph-column 60)
+      (require 'org-habit)
+      (add-to-list 'org-modules 'org-habit)
+      (setq org-habit-graph-column 60)
 
-    (setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-        (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+      (setq org-todo-keywords
+            '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+              ;(sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")
+              (sequence "ASSIGNED(a)" "IN PROGRESS(i)" "IMPLEMENTED(m)" "INTEGRATED(g)" "|" "COMPLETED(c)" "CANCELED(k@)")))
 
-    (setq org-refile-targets
-      '(("Archive.org" :maxlevel . 1)
-        ("Tasks.org" :maxlevel . 1)))
+      (setq org-refile-targets
+            '(("Archive.org" :maxlevel . 1)
+              ("Tasks.org" :maxlevel . 1)))
 
-    ;; Save Org buffers after refiling!
-    (advice-add 'org-refile :after 'org-save-all-org-buffers)
+      ;; Save Org buffers after refiling!
+      (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-    (setq org-tag-alist
-      '((:startgroup)
-         ; Put mutually exclusive tags here
-         (:endgroup)
-         ("@errand" . ?E)
-         ("@home" . ?H)
-         ("@work" . ?W)
-         ("agenda" . ?a)
-         ("planning" . ?p)
-         ("publish" . ?P)
-         ("batch" . ?b)
-         ("note" . ?n)
-         ("idea" . ?i)))
+      (setq org-tag-alist
+            '((:startgroup)
+                                            ; Put mutually exclusive tags here
+              (:endgroup)
+              ("@errand" . ?E)
+              ("@home" . ?H)
+              ("@work" . ?W)
+              ("agenda" . ?a)
+              ("planning" . ?p)
+              ("publish" . ?P)
+              ("batch" . ?b)
+              ("note" . ?n)
+              ("idea" . ?i)))
 
-    ;; Configure custom agenda views
-    (setq org-agenda-custom-commands
-     '(("d" "Dashboard"
-       ((agenda "" ((org-deadline-warning-days 7)))
-        (todo "NEXT"
-          ((org-agenda-overriding-header "Next Tasks")))
-        (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+      ;; Configure custom agenda views
+      (setq org-agenda-custom-commands
+            '(("d" "Dashboard"
+               ((agenda "" ((org-deadline-warning-days 7)))
+                (todo "NEXT"
+                      ((org-agenda-overriding-header "Next Tasks")))
+                (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-      ("n" "Next Tasks"
-       ((todo "NEXT"
-          ((org-agenda-overriding-header "Next Tasks")))))
+              ("n" "Next Tasks"
+               ((todo "NEXT"
+                      ((org-agenda-overriding-header "Next Tasks")))))
 
-      ("W" "Work Tasks" tags-todo "+work-email")
+              ("W" "Work Tasks" tags-todo "+work-email")
 
-      ;; Low-effort next actions
-      ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-       ((org-agenda-overriding-header "Low Effort Tasks")
-        (org-agenda-max-todos 20)
-        (org-agenda-files org-agenda-files)))
+              ;; Low-effort next actions
+              ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+               ((org-agenda-overriding-header "Low Effort Tasks")
+                (org-agenda-max-todos 20)
+                (org-agenda-files org-agenda-files)))
 
-      ("w" "Workflow Status"
-       ((todo "WAIT"
-              ((org-agenda-overriding-header "Waiting on External")
-               (org-agenda-files org-agenda-files)))
-        (todo "REVIEW"
-              ((org-agenda-overriding-header "In Review")
-               (org-agenda-files org-agenda-files)))
-        (todo "PLAN"
-              ((org-agenda-overriding-header "In Planning")
-               (org-agenda-todo-list-sublevels nil)
-               (org-agenda-files org-agenda-files)))
-        (todo "BACKLOG"
-              ((org-agenda-overriding-header "Project Backlog")
-               (org-agenda-todo-list-sublevels nil)
-               (org-agenda-files org-agenda-files)))
-        (todo "READY"
-              ((org-agenda-overriding-header "Ready for Work")
-               (org-agenda-files org-agenda-files)))
-        (todo "ACTIVE"
-              ((org-agenda-overriding-header "Active Projects")
-               (org-agenda-files org-agenda-files)))
-        (todo "COMPLETED"
-              ((org-agenda-overriding-header "Completed Projects")
-               (org-agenda-files org-agenda-files)))
-        (todo "CANC"
-              ((org-agenda-overriding-header "Cancelled Projects")
-               (org-agenda-files org-agenda-files)))))))
+              ("w" "Workflow Status"
+               ((todo "WAIT"
+                      ((org-agenda-overriding-header "Waiting on External")
+                       (org-agenda-files org-agenda-files)))
+                (todo "REVIEW"
+                      ((org-agenda-overriding-header "In Review")
+                       (org-agenda-files org-agenda-files)))
+                (todo "PLAN"
+                      ((org-agenda-overriding-header "In Planning")
+                       (org-agenda-todo-list-sublevels nil)
+                       (org-agenda-files org-agenda-files)))
+                (todo "BACKLOG"
+                      ((org-agenda-overriding-header "Project Backlog")
+                       (org-agenda-todo-list-sublevels nil)
+                       (org-agenda-files org-agenda-files)))
+                (todo "READY"
+                      ((org-agenda-overriding-header "Ready for Work")
+                       (org-agenda-files org-agenda-files)))
+                (todo "ACTIVE"
+                      ((org-agenda-overriding-header "Active Projects")
+                       (org-agenda-files org-agenda-files)))
+                (todo "COMPLETED"
+                      ((org-agenda-overriding-header "Completed Projects")
+                       (org-agenda-files org-agenda-files)))
+                (todo "CANC"
+                      ((org-agenda-overriding-header "Cancelled Projects")
+                       (org-agenda-files org-agenda-files)))))))
 
-    (setq org-capture-templates
-      `(("t" "Tasks / Projects")
-        ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
-             "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+      (setq org-capture-templates
+            `(("t" "Tasks / Projects")
+              ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
+               "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
-        ("j" "Journal Entries")
-        ("jj" "Journal" entry
-             (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-             "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-             ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-             :clock-in :clock-resume
-             :empty-lines 1)
-        ("jm" "Meeting" entry
-             (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-             "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-             :clock-in :clock-resume
-             :empty-lines 1)
+              ("j" "Journal Entries")
+              ("jj" "Journal" entry
+               (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+               "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+               ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+               :clock-in :clock-resume
+               :empty-lines 1)
+              ("jm" "Meeting" entry
+               (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+               "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+               :clock-in :clock-resume
+               :empty-lines 1)
 
-        ("w" "Workflows")
-        ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-             "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+              ("w" "Workflows")
+              ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+               "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
 
-        ("m" "Metrics Capture")
-        ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
-         "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+              ("m" "Metrics Capture")
+              ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
+               "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
 
-    (define-key global-map (kbd "C-c j")
-      (lambda () (interactive) (org-capture nil "jj")))
+      (define-key global-map (kbd "C-c j")
+        (lambda () (interactive) (org-capture nil "jj")))
 
-    (efs/org-font-setup))
+      (efs/org-font-setup)
+
+                                            ; Add ODT export (this was already possible, but adding for docx support)
+      (require 'ox-odt)
+
+                                            ; Use docx as the default ODT export format (good for Google-docs)
+      (setq org-odt-preferred-output-format "docx"))
 
 #+end_src
 
@@ -758,7 +800,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.  This is really a matter of personal preference so you can remove the block below if you don't like the behavior.
 
-#+begin_src emacs-lisp
+#+begin_src 
 
   (defun efs/org-mode-visual-fill ()
     (setq visual-fill-column-width 100
@@ -778,45 +820,57 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
 
 ** Configure Babel Languages
 
-To execute or export code in =org-mode= code blocks, you'll need to set up =org-babel-load-languages= for each language you'd like to use.  [[https://orgmode.org/worg/org-contrib/babel/languages.html][This page]] documents all of the languages that you can use with =org-babel=.
+To execute or export code in =org-mode= code blocks, you'll need to set up =org-babel-load-languages= for each language you'd like to use.  [[https://orgmode.org/worg/org-contrib/babel/languages/index.html][This page]] documents all of the languages that you can use with =org-babel=.
+
+*** Document-Scope Variables and Export without Prompts
+
+Exporting org documents is the best format(s) to share them; however when exporting with source code blocks, babel prompts for a confirmation before executing the code and evaluating the result.  Org-mode allows variables to be set for the scope of a document in the header.  In the following example, ~org-confirm-babel-evaluate~ is set to ~nil~.  Setting document-scoped variables must be on the first line, before the rest of the header.
+
+#+begin_src
+# -*- org-confirm-babel-evaluate: nil; -*-
+#+TITLE:   Title of Org doc
+# General comments that are only visible in org-mode
+#+end_src
 
 *** PlantUML Config
 #+begin_src emacs-lisp
   ;; plantUML for org-mode
   (use-package plantuml-mode
     :init
-    (setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/opt/bwood_arsenal/bin/plantuml.jar"))
+    (setq org-plantuml-jar-path (expand-file-name "~/opt/yyg-nix-config/bin/plantuml.jar"))
     :config
     (defun init-plantuml()
       (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
       (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
-      (setq org-plantuml-jar-path (expand-file-name "/home/local/MAGICLEAP/bwood/opt/bwood_arsenal/bin/plantuml.jar"))
+      (setq org-plantuml-jar-path (expand-file-name "~/opt/yyg-nix-config/bin/plantuml.jar"))
       )
     (add-hook 'org-mode-hook 'init-plantuml)
     )
   ;; (Execute this in a scratch buffer to enable plantuml: C-x C-e )
 
-
-
-
 #+end_src
 
 *** Other Languages
-// #+begin_src emacs-lisp
-  (add-to-list 'org-src-lang-modes
-               '("python" . python))
-  (add-to-list 'org-src-lang-modes
-               '("plantuml" . plantuml))
 
+#+begin_src emacs-lisp
   (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (C . t)
-     (plantuml . t)
-     (python . t)))
+     'org-babel-load-languages
+     '(
+       (C . t)
+       (emacs-lisp . t)
+       (plantuml . t)
+       (python . t)
+       (shell . t)))
+
+                                          ;     (arduino . t)
+                                          ;     (cpp . t)
+                                          ;     (csharp . t)
+                                          ;     (latex . t)
+                                          ;     (javascript . t)
+                                          ;     (matlab . t)
 
   (push '("conf-unix" . conf-unix) org-src-lang-modes)
-// #+end_src
+#+end_src
 
 ** Auto-tangle Configuration Files
 
@@ -852,14 +906,15 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
     ("C-c p" . projectile-command-map)
     :init
     ;; NOTE: Set this to the folder where you keep your Git repos!
-    (when (file-directory-p "~/dev")
-      (setq projectile-project-search-path '("~/dev")))
+    (when (file-directory-p "~/dev/")
+      (setq projectile-project-search-path '("~/dev/")))
     (setq projectile-switch-project-action #'projectile-dired))
 
   (use-package counsel-projectile
     :config (counsel-projectile-mode))
 
 #+end_src
+
 
 ** Magit
 
@@ -880,18 +935,20 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
   (global-set-key (kbd "M-RET") 'magit-diff-visit-file-other-frame)
 #+end_src
 
+
 ** Matching Parens
 
 ~show-paren-mode~ highlights parenthesis at the cursor with its matching parenthesis.
 #+begin_src emacs-lisp
-(show-paren-mode t)        ;; 
+(show-paren-mode t)        ;;
 #+end_src
+
 
 ** Rainbow Delimiters
 
 [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] is useful in programming modes because it colorizes nested parentheses and brackets according to their nesting depth.  This makes it a lot easier to visually match parentheses in Emacs Lisp code without having to count them yourself.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/sandbox.el
 
 ;;(use-package rainbow-delimiters
 ;;  :hook (prog-mode . rainbow-delimiters-mode))
@@ -900,12 +957,26 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
 ** C/C++
 
+*** File types
+
+#+begin_src emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c-or-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.hpp\\'" . c-or-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.inl\\'" . c-or-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.inc\\'" . c-or-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.c\\'" . c-or-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.cc\\'" . c-or-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c-or-c++-mode))
+#+end_src
+
 *** Style
 
 #+begin_src emacs-lisp
-;; C-style
-(setq c-default-style "google"
-      c-basic-offset 4)
+  (use-package google-c-style)
+
+  ;; C-style
+  (setq c-default-style "google")
+  ;; (setq c-basic-offset 4)
 #+end_src
 
 *** Quick Comment
@@ -913,8 +984,6 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
 ;; Key bindings from http://aaronbedra.com/emacs.d/
 (global-set-key (kbd "C-;") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-c C-k") 'compile)
 
 #+end_src
@@ -939,14 +1008,144 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
   (hl-line-mode t)   ;; highlight line mode
   (hs-minor-mode t)  ;; hide-show minor mode
-  (lsp)  ;  LSP connection for auto-complete and code navigation
   )
 
 (add-hook 'c-mode-common-hook 'yyg/indent-for-c-hook)
-(add-hook 'c++-mode-hook 'yyg/indent-for-c-hook)
+;; (add-hook 'c++-mode-hook 'yyg/indent-for-c-hook)
 
 ;; (add-hook 'c-mode-hook
 ;; 	   (lambda () (modify-syntax-table ?\' ".")))
+#+end_src
+
+*** C Finite Width Buffers
+
+#+begin_src emacs-lisp :tangle ./.emacs.d/sandbox.el
+  (defun yyg/c-mode-visual-fill ()
+    (setq visual-fill-column-width 130
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :hook (c-mode-common . yyg/c-mode-visual-fill))
+#+end_src
+
+*** Google C-Style
+
+#+begin_src emacs-lisp
+  ;;  (use-package google-c-style
+  ;;    :ensure t
+  ;;    :init
+  ;;    (add-hook 'c-mode-common-hook 'google-set-c-style)
+  ;;    (add-hook 'c-mode-common-hook 'google-make-newline-indent))
+#+end_src
+
+*** Clang-format style
+
+#+begin_src emacs-lisp
+;; Code formatting
+(global-set-key (kbd "C-<tab>") 'clang-format-region)
+(global-set-key (kbd "C-`") 'clang-format-buffer)
+#+end_src
+
+*** Yasnippet
+#+begin_src emacs-lisp
+  ;; yasnippet
+  (use-package yasnippet)
+  (yas-global-mode 1)
+
+#+end_src
+
+** lsp-mode
+
+#+begin_src emacs-lisp
+  ;; lsp-mode
+  ;; if you want to change prefix for lsp-mode keybindings.
+  ;; (setq lsp-keymap-prefix "s-l")
+
+  (use-package lsp-mode
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    ;; (setq lsp-clients-clangd-executable '("~/opt/clangd/clangd_11.0.0/bin/clangd" ))
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+           (c-mode-common . lsp)
+           ;; if you want which-key integration
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands (lsp-deferred)
+    )
+
+  ;; optional if you want which-key integration
+  (use-package which-key
+    :config
+    (which-key-mode)
+    (setq gc-cons-threshold (* 100 1024 1024)
+          read-process-output-max (* 1024 1024)
+          treemacs-space-between-root-nodes nil
+          company-idle-delay 0.0
+          company-minimum-prefix-length 1
+          lsp-idle-delay 0.1)  ;; clangd is fast
+    )
+
+  ;;  (add-hook 'c-mode-hook 'lsp)
+  ;;  (add-hook 'c++-mode-hook 'lsp)
+  ;;  (add-hook 'c-mode-common-hook 'lsp)
+#+end_src
+
+*** lsp-ui
+
+#+begin_src emacs-lisp
+  ;; lsp-ui
+  (use-package lsp-ui
+    :commands lsp-ui-mode
+    :custom (lsp-ui-doc-position 'bottom))
+#+end_src
+
+*** lsp-ivy
+
+#+begin_src emacs-lisp
+  (use-package lsp-ivy
+    :commands lsp-ivy-workspace-symbol)
+#+end_src
+
+*** company-mode
+
+#+begin_src emacs-lisp
+  (use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+                ("<tab>" . company-complete-selection))
+    (:map lsp-mode-map
+          ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
+#+end_src
+
+
+*** flycheck
+#+begin_src emacs-lisp
+  ;; flycheck
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
+#+end_src
+
+*** lsp-treemacs
+
+#+begin_src emacs-lisp
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+#+end_src
+
+*** dap-mode
+
+#+begin_src emacs-lisp
+  ;; optionally if you want to use debugger
+  (use-package dap-mode)
+  ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 #+end_src
 
 ** Javascript
@@ -970,7 +1169,22 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 ;; '((emacs-lisp . t) (ein . t))
 
 #+end_src
-* Sandbox 
+
+** GDB
+
+#+begin_src emacs-lisp :tangle :tangle ./.emacs.d/sandbox.el
+;; GDB many windows layout
+(setq
+ ;; use gdb-many-windows by default
+ gdb-many-windows t
+ ;; Non-nil means display source file containging the main routine at startup
+ gdb-show-main t
+ )
+#+end_src
+
+* Communication
+
+* Sandbox
 
 The sandbox is my area to try out new emacs packages or lisp snippets.
 ** Smooth Scrolling

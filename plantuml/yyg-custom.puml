@@ -56,11 +56,13 @@
 !$bgLight = "#CCCCCC"
 
 !$aud = "#33F,bold"
+!$audref = "#33F,dashed"
 !$ctl = "#000,bold"
+!$ctlref = "#000,dashed"
 !$hid = "hidden"
 
 ' ================================
-' Helper Functions
+' Factory Function
 '
 !unquoted procedure Factory($style, $alias, $color=bg, $label="none", $shade="none", $ref="false")
 !$cmd = $style + " "
@@ -72,16 +74,22 @@
 !endif
 
 
+!if ($color != "transparent")
 
 !$fullColor = %get_variable_value("$color")
+
 !if ($shade == "light")
 !$fullColor = %get_variable_value("$color + Light")
 !endif
+
 !if ($shade == "dark")
 !$fullColor = %get_variable_value("$color + Dark")
 !endif
 
 !$cmd = $cmd + ' ' + $fullColor
+
+!endif
+
 
 !if ($ref != "false")
 !$cmd = $cmd + ";line.dashed"
@@ -207,6 +215,10 @@ Factory(usecase, $alias, $cloudBgLight, $label)
 Factory(package, $alias, $bgLight, $label)
 !endprocedure
 
+!unquoted procedure ClearWrap($alias, $label="none")
+Factory(package, $alias, transparent, $label)
+!endprocedure
+
 !unquoted procedure AppWrap($alias, $label="none")
 Factory(package, $alias, $appBgLight, $label)
 !endprocedure
@@ -232,6 +244,10 @@ Factory(package, $alias, $cloudBgLight, $label)
 '
 !unquoted procedure Pack($alias, $label="none")
 Factory(package, $alias, $bgDark, $label)
+!endprocedure
+
+!unquoted procedure ClearPack($alias, $label="none")
+Factory(package, $alias, transparent, $label)
 !endprocedure
 
 !unquoted procedure AppPack($alias, $label="none")
