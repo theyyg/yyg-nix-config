@@ -109,7 +109,7 @@ This section configures basic UI settings that remove unneeded elements to make 
 
 #+end_src
 
-** COMMENT Toggle split frame from vertical to horizontal
+** Toggle split frame from vertical to horizontal
 
 #+begin_src emacs-lisp
   (defun toggle-window-split ()
@@ -139,6 +139,9 @@ This section configures basic UI settings that remove unneeded elements to make 
 
   (global-set-key (kbd "C-x |") 'toggle-window-split)
 #+end_src
+
+#+RESULTS:
+: toggle-window-split
 
 * Backup File Config
 
@@ -878,6 +881,16 @@ Exporting org documents is the best format(s) to share them; however when export
   ;; (Execute this in a scratch buffer to enable plantuml: C-x C-e )
 
 #+end_src
+
+*** PlantUML Config
+#+begin_src emacs-lisp
+  ;; Github Flavored Markdown exporter for org-mode
+  (use-package ox-gfm
+    :after org
+    :config 
+    `(require `ox-gfm nil t))
+#+end_src
+
 
 *** Other Languages
 

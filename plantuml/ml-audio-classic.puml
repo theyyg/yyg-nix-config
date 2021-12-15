@@ -1,0 +1,325 @@
+' Yyg Custom PlantUML Configs and Shortcuts
+' - This uses the plantuml "use case" style
+'  https://github.com/theyyg/yyg-nix-config/tree/master/plantuml
+'  patterned after the plant uml standard library https://plantuml.com/stdlib
+'
+' Download and install plantuml https://plantuml.com/download
+' Install plantuml-mode via melpa
+'
+' To use in org mode:
+'  First: Run these scripts in a scratch buffer or add to emacs config
+'   Scratch:
+'    (setq org-plantuml-jar-path (expand-file-name "/home/you/path/to/plantuml.jar"))
+'    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+'    (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+'
+'   .emacs.el:
+'    (setq org-plantuml-jar-path (expand-file-name "/home/you/path/to/plantuml.jar"))
+'
+'    (org-babel-do-load-languages
+'     'org-babel-load-languages
+'     '((plantuml . t)))
+'
+'    (defun init-plantuml()
+'      (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+'      (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+'      )
+'
+'    (add-hook 'org-mode-hook 'init-plantuml)
+'
+' Using PlantUML in org-mode
+'  Create a plantuml source block:
+'   #+begin_src plantuml :file ./chart-name.png
+'   title Chart Title
+'
+'
+'   #+end_src
+'
+'  Publish plant-uml in org doc by executing C-c C-e h o
+
+' ================================
+' Define Colors
+'
+
+!$mlBlack = "#000000"
+!$mlMoonDust = "#4A4A4A"
+!$mlWhite = "#FFFFFF"
+!$mlMissionRed = "#F12742"
+!$mlRed = $mlMissionRed
+!$mlPink = "#F65275"
+!$mlPinkLight = "#FFBEC5"
+!$mlOrange = "#FF7500"
+!$mlOrangeLight = "#FFC87F"
+!$mlYellow = "#FED000"
+!$mlYellowLight = "#FFF483" 
+!$mlGreen = "#ACEB68"
+!$mlGreenLight = "#D4FAB7"
+!$mlBlue = "#00C1D4"
+!$mlBlueLight = "#98FDEE"
+!$mlViolet = "#A37BC8"
+!$mlVioletLight = "#EAC2ED"
+
+!$borderDark = $mlBlack
+!$borderLight = $mlMoondust
+
+!$appDark = $mlPink
+!$appLight = $mlPinkLight
+!$beltpackDark = $mlPink
+!$beltpackLight = $mlPinkLight
+!$pluginDark = $mlOrange
+!$pluginLight = $mlOrangeLight
+!$meroDark = $mlOrange
+!$meroLight = $mlOrangeLight
+!$serviceDark = $mlYellow
+!$serviceLight = $mlYellowLight
+!$x86Dark = $mlYellow
+!$x86Light = $mlYellowLight
+!$acpDark = $mlGreen
+!$acpLight = $mlGreenLight
+!$wearableDark = %lighten($mlBlue,50)
+!$wearableLight = %lighten($mlBlue,100)
+!$hydraDark = $mlBlue
+!$hydraLight = $mlBlueLight
+!$acousticsDark = $mlViolet
+!$acousticsLight = $mlVioletLight
+!$miscDark = %lighten($mlMoonDust,100)
+!$miscLight = %lighten($mlMoonDust,200)
+
+!$importantBg = $mlRed
+!$bgDark = $mlMoonDust
+!$bgLight = $mlWhite
+
+!$aud = $mlBlue+",bold"
+!$audref = $mlBlue+",dashed"
+!$ctl = $mlMoonDust+",bold"
+!$ctlref = $mlMoonDust+",dashed"
+!$hid = "hidden"
+
+!$defaultColor = "#A4A4A4"
+!$bg = "#A4A4A4"
+!$renderBg = $mlWhite
+
+' ================================
+' LookupColor Function
+'
+!unquoted function LookupColor($lookupColor)
+
+!$colorExists = %variable_exists("$"+$lookupColor)
+
+!if ($colorExists)
+!$foundColor = %get_variable_value("$"+$lookupColor)
+'!log "LookupColor: Color ($lookupColor) found ($foundColor)"
+!else
+!$foundColor = %false()
+'!log "LookupColor: Color ($lookupColor) does not exist"
+!endif
+ 
+!return $foundColor
+!endfunction
+
+
+
+' ================================
+' ShadeColorCategory Function
+'
+!unquoted function ShadeColorCategory($category="", $shade="none")
+
+' Default to transparent
+!$finalColor = "transparent"
+
+' if category Specified
+!if ($category != "transparent" && $category != "") 
+
+'  if shade == none
+!if ($shade == "none")
+!$lookupColor = LookupColor($category)
+'   if color not found
+!if $lookupColor
+!$finalColor = $lookupColor
+'   else color not found
+!else
+!$finalColor = $defaultColor
+'   endif color not found
+!endif
+
+'  elseif shade == light
+!elseif ($shade == "light")
+!$lookupColor = LookupColor($category+"Light")
+'   if categoryLight found
+!if %not($lookupColor)
+!$lookupColor = LookupColor($category)
+'    if category found
+!if ($lookupColor)
+!$finalColor = %lighten($lookupColor,100)
+'    else category found
+!else
+!$finalColor = $defaultColor
+'    endif category found
+!endif
+'   else categoryLight found
+!else
+!$finalColor = $lookupColor
+'   endifcategoryLight found
+!endif
+
+'  if shade == dark
+!elseif ($shade == "dark")
+!$lookupColor = LookupColor($category+"Dark")
+'   if categoryDark found
+!if %not($lookupColor)
+!$lookupColor = LookupColor($category)
+'    if category found
+!if ($lookupColor)
+!$finalColor = %lighten($lookupColor,100)
+'    else category found
+!else
+!$finalColor = $defaultColor
+'    endif category found
+!endif
+'   else categoryDark found
+!else
+!$finalColor = $lookupColor
+'   endifcategoryDark found
+!endif
+'  endif shade == none/light/dark
+!endif
+
+' if category Specified
+!endif
+
+'!log "ShadeColorCategory ( category=$category, shade=$shade ) => $finalColor"
+!return $finalColor
+!endfunction
+
+
+' ================================
+' Factory Procedure (prints
+'
+!unquoted procedure $Factory($style, $alias, $color="transparent", $label="none", $shade="none", $ref="false")
+!$cmd = $style + " "
+
+!if ($label != "none")
+!$cmd = $cmd + '"' + $label + '"' + " as " + $alias
+!else
+!$cmd = $cmd + '"' + $alias + '"' + " "
+!endif
+
+!if ($color != "transparent" && $color != "")
+!$fullColor = ShadeColorCategory($color, $shade)
+!$cmd = $cmd + ' ' + $fullColor
+!endif
+
+!if (%not($ref))
+!$cmd = $cmd + ";line.dashed"
+!endif
+
+!log $cmd
+$cmd
+!endprocedure
+
+' ================================
+' Block
+'
+!unquoted procedure Block($alias, $label="none", $color="bg", $shade="none", $ref=%false())
+$Factory(rectangle, $alias, $color, $label, $shade, $ref)
+!endprocedure
+
+' ================================
+' Data
+'
+!unquoted procedure Data($alias, $label="none", $color="bg", $shade="none", $ref=%false())
+$Factory(usecase, $alias, $color, $label, $shade, $ref)
+!endprocedure
+
+' ================================
+' Group
+'
+!unquoted procedure Group($alias, $label="none", $color="bg", $shade="light", $ref=%false())
+$Factory(package, $alias, $color, $label, $shade, $ref)
+!endprocedure
+
+' ================================
+' DB - Database Container
+'
+!unquoted procedure Db($alias, $label="none", $color="bg", $shade="light", $ref=%false())
+Factory(database, $alias, $color, $label, $shade, $ref)
+!endprocedure
+
+
+' ================================
+' Layout Style
+'
+!$LAYOUT_TOP_DOWN = "top to bottom direction"
+!$LAYOUT_LEFT_RIGHT = "left to right direction"
+
+$LAYOUT_TOP_DOWN
+'$LAYOUT_LEFT_RIGHT
+
+skinparam line {
+  'type polyline
+  type ortho
+}
+
+skinparam ranksep 50
+skinparam nodesep 50  
+
+' ================================
+' Package Style
+'
+skinparam package {
+  Style Rectangle
+  BackgroundColor transparent
+  BorderColor $borderDark
+  BorderThickness 1
+  shadowing false
+  RoundCorner 25
+
+'  BackgroundColor<<App>> $appBgLight
+
+  ArrowColor black
+
+  sep 10
+}
+
+' ================================
+' Rectangle Style
+'
+skinparam rectangle {
+  BackgroundColor transparent
+  BorderColor $borderDark
+  BorderThickness 1
+  shadowing false
+  RoundCorner 15
+
+  ArrowColor black
+}
+
+' ================================
+' Usecase Style
+'
+skinparam usecase {
+  BackgroundColor transparent
+  BorderColor $borderDark
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Database Style
+'
+skinparam Database {
+  BackgroundColor transparent
+  BorderColor $borderDark
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+skinparam arrow {
+}
+
+skinparam BackgroundColor transparent
+
