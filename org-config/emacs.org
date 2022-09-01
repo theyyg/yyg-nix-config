@@ -25,8 +25,9 @@ The following section installs use-package through the built-in emacs package ma
   (require 'package)
 
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			   ("org" . "https://orgmode.org/elpa/")))
-			   ;; ("elpa" . "https://elpa.gnu.org/packages/")))
+                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                           ("gnu" . "https://elpa.gnu.org/packages/")))
+                           ;; ("elpa" . "https://elpa.gnu.org/packages/")))
 
   (package-initialize)
   (unless package-archive-contents
@@ -645,7 +646,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
     (use-package org
       :mode (("\\.org$" . org-mode))
-      :ensure org-plus-contrib
+      :ensure org-contrib
       :hook (org-mode . efs/org-mode-setup)
       :bind ( ;; insert global bindings here
              :map org-mode-map
@@ -879,7 +880,7 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
   ;; Automatically tangle our Emacs.org config file when we save it
   (defun efs/org-babel-tangle-config ()
     (when (string-equal (buffer-file-name)
-                        (expand-file-name "~/opt/yyg-nix-config/org-config/emacs.org"))
+                        (expand-file-name "~/dev/git/yyg-nix-config/org-config/emacs.org"))
       ;; Dynamic scoping to the rescue
       (let ((org-confirm-babel-evaluate nil))
         (org-babel-tangle))))
@@ -1343,6 +1344,16 @@ Taken from https://www.draketo.de/software/emacs-javascript.html
 * Sandbox
 
 The sandbox is my area to try out new emacs packages or lisp snippets.
+** Markdown Mode
+
+#+begin_src emacs-lisp
+(autoload 'markdown-mode "markdown-mode"
+   "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+;(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+#+end_src
+
 ** Smooth Scrolling
 
 #+begin_src emacs-lisp
