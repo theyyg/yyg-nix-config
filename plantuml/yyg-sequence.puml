@@ -35,57 +35,29 @@
 '
 '   #+end_src
 '
+'  Add the following line at the top of the org file to prevent evaluation prompts:
+'  # -*- org-confirm-babel-evaluate: nil; -*-
+'
+' or add this sections to the bottom of the org file:
+'
+' * Local Variables :noexport:
+' Local Variables:
+' org-confirm-babel-evaluate: nil
+' End:
+'
 '  Publish plant-uml in org doc by executing C-c C-e h o
 
-' ================================
-' Define Colors
-'
-!$border1 = "#666666"
-!$border2 = "#999999"
-!$appBg1 = "#E9D1DC"
-!$appBg2 = "#D9B1C3"
-!$pluginBg1 = "#D0DEF8"
-!$pluginBg2 = "#B1CAF3"
-!$engineBg1 = "#D1E0E8"
-!$engineBg2 = "#FFFFFF/D1E0E8"
-!$serviceBg1 = "#E3EFDF"
-!$serviceBg2 = "#C2DDB7"
-!$cloud1 = "#E2DCED"
-!$cloud2 = "#BFB4DA"
-!$bg1 = "#CCCCCC"
-!$bg2 = "#AAAAAA"
-!$frameBg1 = "#EEEEEE"
-!$frameBg2 = "#CCCCCC"
-
-!$aud = "#33F,bold"
-!$ctl = "#000,bold"
-!$hid = "hidden"
+!include yyg-colors.puml
 
 ' ================================
 ' Block
 '
-!unquoted procedure Block($e_alias, $e_label, $e_color=$border)
-entity "$e_label" as $e_alias
+!unquoted procedure Block($e_alias, $e_label, $e_color=$bgLt)
+entity "$e_label" as $e_alias $e_color
 !endprocedure
 
-!unquoted procedure AppBlock($e_alias, $e_label)
-entity "$e_label" as $e_alias $appBg2
-!endprocedure
-
-!unquoted procedure PluginBlock($e_alias, $e_label)
-entity "$e_label" as $e_alias $pluginBg2
-!endprocedure
-
-!unquoted procedure EngineBlock($e_alias, $e_label)
-entity "$e_label" as $e_alias $engineBg2
-!endprocedure
-
-!unquoted procedure ServiceBlock($e_alias, $e_label)
-entity "$e_label" as $e_alias $serviceBg2
-!endprocedure
-
-!unquoted procedure CloudBlock($e_alias, $e_label)
-entity "$e_label" as $e_alias $cloudBg2
+!unquoted procedure CreateBlock($e_alias, $e_label, $e_color=$bgLt)
+create entity "$e_label" as $e_alias $e_color
 !endprocedure
 
 ' ================================
@@ -95,62 +67,26 @@ entity "$e_label" as $e_alias $cloudBg2
 control "For Each \n $e_label" as $e_alias
 !endprocedure
 
-!unquoted procedure AppIndex($e_alias, $e_label)
-control "For Each \n $e_label" as $e_alias $appBg2
-!endprocedure
-
-!unquoted procedure PluginIndex($e_alias, $e_label)
-control "For Each \n $e_label" as $e_alias $pluginBg2
-!endprocedure
-
-!unquoted procedure EngineIndex($e_alias, $e_label)
-control "For Each \n $e_label" as $e_alias $engineBg2
-!endprocedure
-
-!unquoted procedure ServiceIndex($e_alias, $e_label)
-control "For Each \n $e_label" as $e_alias $serviceBg2
-!endprocedure
-
-!unquoted procedure CloudIndex($e_alias, $e_label)
-control "For Each \n $e_label" as $e_alias $cloudBg2
+!unquoted procedure CreateIndex($e_alias, $e_label, $e_color=$border)
+create control "For Each \n $e_label" as $e_alias
 !endprocedure
 
 ' ================================
 ' Wrap
 '
-!unquoted procedure Wrap($name)
-box "$name"
+!unquoted procedure Wrap($e_name, $e_color=$bgLt)
+box "$e_name" $e_color
 !endprocedure
 
 !unquoted procedure EndWrap()
 end box
 !endprocedure
 
-!unquoted procedure AppWrap($name)
-box "$name" $appBg1
-!endprocedure
-
-!unquoted procedure PluginWrap($name)
-box "$name" $pluginBg1
-!endprocedure
-
-!unquoted procedure EngineWrap($name)
-box "$name" $engineBg1
-!endprocedure
-
-!unquoted procedure ServiceWrap($name)
-box "$name" $serviceBg1
-!endprocedure
-
-!unquoted procedure CloudWrap($name)
-box "$name" $cloudBg1
-!endprocedure
-
 ' ================================
 ' Group
 '
-!unquoted procedure Group($name)
-group "$name"
+!unquoted procedure Group($e_name, $e_color=$bgLt)
+group "$e_name" $e_color
 !endprocedure
 
 !unquoted procedure EndGroup()
@@ -160,8 +96,8 @@ end group
 ' ================================
 ' Loop
 '
-!unquoted procedure Loop($name)
-loop "$name"
+!unquoted procedure Loop($name, $e_color=$bgLt)
+loop "$name" $e_color
 !endprocedure
 
 !unquoted procedure EndLoop()
@@ -172,8 +108,8 @@ end loop
 ' Style
 '
 skinparam sequence {
-  LifeLineBorderColor $border1
-  LifeLineBackgroundColor $bg1
+  LifeLineBorderColor $border
+  LifeLineBackgroundColor $bgLt
 
   ArrowColor black
 }
@@ -189,7 +125,7 @@ skinparam sequence {
 
 skinparam SequenceParticipant{
   BackgroundColor transparent
-  BorderColor $border1
+  BorderColor $border
   BorderThickness 1
   Shadowing false
 }
@@ -204,21 +140,21 @@ skinparam SequenceBox{
 skinparam SequenceGroup{
   BackgroundColor $frameBg1
   BodyBackgroundColor transparent
-  BorderColor $border1
+  BorderColor $border
   BorderThickness 0
   Shadowing false
 }
 
 skinparam Control{
   BackgroundColor transparent
-  BorderColor $border1
+  BorderColor $border
   BorderThickness 1
   Shadowing false
 }
 
 skinparam Entity{
   BackgroundColor transparent
-  BorderColor $border1
+  BorderColor $border
   BorderThickness 1
   Shadowing false
 }

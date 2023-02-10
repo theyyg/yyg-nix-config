@@ -37,27 +37,10 @@
 '
 '  Publish plant-uml in org doc by executing C-c C-e h o
 
-' ================================
-' Define Colors
-'
-!$borderDark = "#666666"
-!$borderLight = "#999999"
-!$appBgDark = "#E9D1DC"
-!$appBgLight = "#D9B1C3"
-!$pluginBgDark = "#D0DEF8"
-!$pluginBgLight = "#B1CAF3"
-!$engineBgDark = "#D1E0E8"
-!$engineBgLight = "#D1E0E8"
-!$serviceBgDark = "#E3EFDF"
-!$serviceBgLight = "#C2DDB7"
-!$cloudBgDark = "#E2DCED"
-!$cloudBgLight = "#BFB4DA"
-!$bgDark = "#AAAAAA"
-!$bgLight = "#CCCCCC"
 
-!$aud = "#33F,bold"
-!$ctl = "#000,bold"
-!$hid = "hidden"
+
+!include yyg-colors.puml
+
 
 ' ================================
 ' Helper Functions
@@ -75,10 +58,10 @@
 
 !$fullColor = %get_variable_value("$color")
 !if ($shade == "light")
-!$fullColor = %get_variable_value("$color + Light")
+!$fullColor = %get_variable_value("$color + Lt")
 !endif
 !if ($shade == "dark")
-!$fullColor = %get_variable_value("$color + Dark")
+!$fullColor = %get_variable_value("$color + Dk")
 !endif
 
 !$cmd = $cmd + ' ' + $fullColor

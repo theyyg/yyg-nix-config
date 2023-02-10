@@ -191,7 +191,8 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 #+begin_src emacs-lisp
 
-  (use-package all-the-icons)
+  (use-package all-the-icons
+    :ensure t)
 
   (use-package doom-modeline
     :init (doom-modeline-mode 1)
@@ -398,11 +399,12 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+begin_src emacs-lisp
 
-  ;; Indentation from http://aaronbedra.com/emacs.d/
-  (setq-default indent-tabs-mode nil)
-  (setq indent-tabs-mode nil
-        c-basic-indent 4
-        tab-width 4)
+;; Indentation from http://aaronbedra.com/emacs.d/
+(setq-default indent-tabs-mode nil
+              tab-width 4)
+(setq indent-tabs-mode nil
+      c-basic-indent 4
+      tab-width 4)
 
 #+end_src
 
@@ -831,17 +833,36 @@ Exporting org documents is the best format(s) to share them; however when export
 # General comments that are only visible in org-mode
 #+end_src
 
+Alternatively, adding the following section to the bottom of an org file will also set the appropriate variable and move the confirmation to when the file is loaded.
+
+#+begin_src :notangle
+ * Local Variables :noexport:
+Local Variables:
+org-confirm-babel-evaluate: nil
+End:
+
+
+#+end_src
+
+*** Allow export of org files to other formats
+
+Support for exporting org-mode files to markdown is included with the org package, but it must be enabled.
+
+#+begin_src emacs-lisp
+(require 'ox-md)
+#+end_src
+
 *** PlantUML Config
 #+begin_src emacs-lisp
   ;; plantUML for org-mode
   (use-package plantuml-mode
     :init
-    (setq org-plantuml-jar-path (expand-file-name "~/opt/yyg-nix-config/bin/plantuml.jar"))
+    (setq org-plantuml-jar-path (expand-file-name "~/dev/git/yyg-nix-config/bin/plantuml.jar"))
     :config
     (defun init-plantuml()
       (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
       (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
-      (setq org-plantuml-jar-path (expand-file-name "~/opt/yyg-nix-config/bin/plantuml.jar"))
+      (setq org-plantuml-jar-path (expand-file-name "~/dev/git/yyg-nix-config/bin/plantuml.jar"))
       )
     (add-hook 'org-mode-hook 'init-plantuml)
     )
@@ -1141,7 +1162,7 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
 *** dap-mode
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :notangle
   ;; optionally if you want to use debugger
   (use-package dap-mode)
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
@@ -1321,22 +1342,27 @@ Taken from https://www.draketo.de/software/emacs-javascript.html
 *** Ipython Notebook
 
 #+begin_src emacs-lisp
+  ;; Emacs Ipython Notebook (in org-mode)
+  (use-package ein :ensure t)
 
-;; Emacs Ipython Notebook (in org-mode)
-;; '((emacs-lisp . t) (ein . t))
+  ;; Add IDE-like environment for python
+  (use-package elpy :ensure t)
 
+  ;; (use-package math-preview :ensure t)
+  ;;  :custom
+  ;;  (customize-variable math-preview-command
 #+end_src
 
 ** GDB
 
 #+begin_src emacs-lisp :tangle :tangle ./.emacs.d/sandbox.el
-;; GDB many windows layout
-(setq
- ;; use gdb-many-windows by default
- gdb-many-windows t
- ;; Non-nil means display source file containging the main routine at startup
- gdb-show-main t
- )
+  ;; GDB many windows layout
+  (setq
+   ;; use gdb-many-windows by default
+   gdb-many-windows t
+   ;; Non-nil means display source file containging the main routine at startup
+   gdb-show-main t
+   )
 #+end_src
 
 * Communication

@@ -1,10 +1,12 @@
 #!/bin/bash
 
+DESKTOP=0
+
 CONFIG="$( cd "$(dirname "$0")" ; pwd -P )"
 pushd `pwd`
 
-cd ~
-OLD="~/.oldhome"
+cd $HOME
+OLD=$HOME/.oldhome
 mkdir -p $OLD
 
 move_and_link() {
@@ -41,34 +43,43 @@ move_and_link $OLD $CONFIG/home $HOME .bash_logout
 move_and_link $OLD $CONFIG/home $HOME .bash_env
 move_and_link $OLD $CONFIG/home $HOME .bash_aliases
 move_and_link $OLD $CONFIG/home $HOME .bash_custom
-move_and_link $OLD $CONFIG/home $HOME .fehbg
 move_and_link $OLD $CONFIG/home $HOME .gitignore_global
 move_and_link $OLD $CONFIG/home $HOME .profile
-move_and_link $OLD $CONFIG/home $HOME .Xdefaults
-move_and_link $OLD $CONFIG/home $HOME .xinitrc
-# move_and_link $OLD $CONFIG/home $HOME .xinputrc
-move_and_link $OLD $CONFIG/home $HOME .Xresources
-move_and_link $OLD $CONFIG/home $HOME .xsession
+
+if [ $DESKTOP -ne 0 ]; then
+   move_and_link $OLD $CONFIG/home $HOME .fehbg
+   move_and_link $OLD $CONFIG/home $HOME .Xdefaults
+   move_and_link $OLD $CONFIG/home $HOME .xinitrc
+   move_and_link $OLD $CONFIG/home $HOME .xinputrc
+   move_and_link $OLD $CONFIG/home $HOME .Xresources
+   move_and_link $OLD $CONFIG/home $HOME .xsession
+fi
 
 if [ ! -L "$CONFIG/emacs" ]; then
-	ln -s $CONFIG/emacs25 $CONFIG/emacs
+	ln -s $CONFIG/emacs27 $CONFIG/emacs
 fi
 
-move_and_link $OLD $CONFIG/emacs $HOME .emacs
-move_and_link $OLD $CONFIG/emacs $HOME .emacs-custom.el
+# Replaced by the org-config emacs 
+# move_and_link $OLD $CONFIG/emacs $HOME .emacs
+# move_and_link $OLD $CONFIG/emacs $HOME .emacs-custom.el
 # move_and_link $OLD $CONFIG $HOME emacs
+move_and_link $OLD $CONFIG/org-config $HOME .emacs.d
 
-move_and_link $OLD $CONFIG/ $HOME .i3
-if [ ! -L "$CONFIG/bin/i3-name" ]; then
-	ln -s $CONFIG/.i3/i3-container-name.sh $CONFIG/bin/i3-name
-fi
-if [ ! -L "$CONFIG/bin/i3-sh" ]; then
-	ln -s $CONFIG/.i3/i3-container-name.sh $CONFIG/bin/i3-sh
-fi
-if [ ! -L "$CONFIG/bin/i3-ws" ]; then
-	ln -s $CONFIG/.i3/i3-create-workspace.sh $CONFIG/bin/i3-ws
+if [ $DESKTOP -ne 0 ]; then
+   move_and_link $OLD $CONFIG/ $HOME .i3
+   if [ ! -L "$CONFIG/bin/i3-name" ]; then
+       ln -s $CONFIG/.i3/i3-container-name.sh $CONFIG/bin/i3-name
+   fi
+   if [ ! -L "$CONFIG/bin/i3-sh" ]; then
+       ln -s $CONFIG/.i3/i3-container-name.sh $CONFIG/bin/i3-sh
+   fi
+   if [ ! -L "$CONFIG/bin/i3-ws" ]; then
+       ln -s $CONFIG/.i3/i3-create-workspace.sh $CONFIG/bin/i3-ws
+   fi
 fi
 
 popd
 
+if [ $DESKTOP -ne 0 ]; then
 gsettings set org.gnome.desktop.background show-desktop-icons true
+fi

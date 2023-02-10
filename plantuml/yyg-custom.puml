@@ -35,36 +35,30 @@
 '
 '   #+end_src
 '
+'  Add the following line at the top of the org file to prevent evaluation prompts:
+'  # -*- org-confirm-babel-evaluate: nil; -*-
+'
+' or add this sections to the bottom of the org file:
+'
+' * Local Variables :noexport:
+' Local Variables:
+' org-confirm-babel-evaluate: nil
+' End:
+'
 '  Publish plant-uml in org doc by executing C-c C-e h o
 
-' ================================
-' Define Colors
-'
-!$borderDark = "#666666"
-!$borderLight = "#999999"
-!$appBgDark = "#E9D1DC"
-!$appBgLight = "#D9B1C3"
-!$pluginBgDark = "#D0DEF8"
-!$pluginBgLight = "#B1CAF3"
-!$engineBgDark = "#D1E0E8"
-!$engineBgLight = "#D1E0E8"
-!$serviceBgDark = "#E3EFDF"
-!$serviceBgLight = "#C2DDB7"
-!$cloudBgDark = "#E2DCED"
-!$cloudBgLight = "#BFB4DA"
-!$bgDark = "#AAAAAA"
-!$bgLight = "#CCCCCC"
 
-!$aud = "#33F,bold"
-!$audref = "#33F,dashed"
-!$ctl = "#000,bold"
-!$ctlref = "#000,dashed"
-!$hid = "hidden"
+
+' ===================================================
+' LOOK INTO EBNF ELEMENTS FOR SIGNAL FLOW DIAGRAMS
+' ===================================================
+
+!include yyg-colors.puml
 
 ' ================================
 ' Factory Function
 '
-!unquoted procedure Factory($style, $alias, $color=bg, $label="none", $shade="none", $ref="false")
+!unquoted procedure Factory($style, $alias, $color=bg, $label="none", $ref="false", $shade="none")
 !$cmd = $style + " "
 
 !if ($label != "none")
@@ -79,11 +73,11 @@
 !$fullColor = %get_variable_value("$color")
 
 !if ($shade == "light")
-!$fullColor = %get_variable_value("$color + Light")
+!$fullColor = %get_variable_value("$color + Lt")
 !endif
 
 !if ($shade == "dark")
-!$fullColor = %get_variable_value("$color + Dark")
+!$fullColor = %get_variable_value("$color + Dk")
 !endif
 
 !$cmd = $cmd + ' ' + $fullColor
@@ -102,199 +96,143 @@ $cmd
 ' ================================
 ' Block
 '
-!unquoted procedure Block($alias, $label="none")
-Factory(rectangle, $alias, $bgDark, $label)
-!endprocedure
-
-!unquoted procedure AppBlock($alias, $label="none")
-Factory(rectangle, $alias, $appBgDark, $label)
-!endprocedure
-
-!unquoted procedure PluginBlock($alias, $label="none")
-Factory(rectangle, $alias, $pluginBgDark, $label)
-!endprocedure
-
-!unquoted procedure EngineBlock($alias, $label="none")
-Factory(rectangle, $alias, $engineBgDark, $label)
-!endprocedure
-
-!unquoted procedure ServiceBlock($alias, $label="none")
-Factory(rectangle, $alias, $serviceBgDark, $label)
-!endprocedure
-
-!unquoted procedure CloudBlock($alias, $label="none")
-Factory(rectangle, $alias, $cloudBgDark, $label)
+!unquoted procedure Block($alias, $label="none", $bg=$bgDk)
+Factory(rectangle, $alias, $bg, $label)
 !endprocedure
 
 ' ================================
-' Dark Block
+' Round (Ellipse)
 '
-!unquoted procedure DBlock($alias, $label="none")
-Factory(rectangle, $alias, $bgLight, $label)
-!endprocedure
-
-!unquoted procedure AppDBlock($alias, $label="none")
-Factory(rectangle, $alias, $appBgLight, $label)
-!endprocedure
-
-!unquoted procedure PluginDBlock($alias, $label="none")
-Factory(rectangle, $alias, $pluginBgLight, $label)
-!endprocedure
-
-!unquoted procedure EngineDBlock($alias, $label="none")
-Factory(rectangle, $alias, $engineBgLight, $label)
-!endprocedure
-
-!unquoted procedure ServiceDBlock($alias, $label="none")
-Factory(rectangle, $alias, $serviceBgLight, $label)
-!endprocedure
-
-!unquoted procedure CloudDBlock($alias, $label="none")
-Factory(rectangle, $alias, $cloudBgLight, $label)
+!unquoted procedure Round($alias, $label="none", $bg=$bgDk)
+Factory(storage, $alias, $bg, $label)
 !endprocedure
 
 ' ================================
-' Reference
+' Hex (Hexagon)
+'
+!unquoted procedure Hex($alias, $label="none", $bg=$bgDk)
+Factory(hexagon, $alias, $bg, $label)
+!endprocedure
+
+' ================================
+' Ref (Reference)
 '
 '
-!unquoted procedure Ref($alias, $label="none")
-Factory(rectangle, $alias, $bgDark, $label, "none", "true")
+!unquoted procedure Ref($alias, $label="none", $bg=$bgDk)
+Factory(rectangle, $alias, $bg, $label, "true", "none")
 !endprocedure
 
-!unquoted procedure AppRef($alias, $label="none")
-Factory(rectangle, $alias, $appBgDark, $label, "none", "true")
+' ================================
+' System
+'
+'
+!unquoted procedure System($alias, $label="none", $bg=$bgDk)
+Factory(package, $alias, $bg, $label)
 !endprocedure
 
-!unquoted procedure PluginRef($alias, $label="none")
-Factory(rectangle, $alias, $pluginBgDark, $label, "none", "true")
+' ================================
+' Box (Black Box)
+'
+'
+!unquoted procedure Box($alias, $label="none", $bg=$bgDk)
+Factory(node, $alias, $bg, $label)
 !endprocedure
 
-!unquoted procedure EngineRef($alias, $label="none")
-Factory(rectangle, $alias, $engineBgDark, $label, "none", "true")
+' ================================
+' Object
+'
+'
+!unquoted procedure Object($alias, $label="none", $bg=$bgDk)
+Factory(card, $alias, $bg, $label)
 !endprocedure
 
-!unquoted procedure ServiceRef($alias, $label="none")
-Factory(rectangle, $alias, $serviceBgDark, $label, "none", "true")
-!endprocedure
-
-!unquoted procedure CloudRef($alias, $label="none")
-Factory(rectangle, $alias, $cloudBgDark, $label, "none", "true")
+' ================================
+' Cloud
+'
+!unquoted procedure Cloud($alias, $label="none", $bg=$bgDk)
+Factory(cloud, $alias, $bg, $label)
 !endprocedure
 
 ' ================================
 ' Data
 '
-!unquoted procedure Data($alias, $label="none")
-Factory(usecase, $alias, $bgLight, $label)
-!endprocedure
-
-!unquoted procedure AppData($alias, $label="none")
-Factory(usecase, $alias, $appBgLight, $label)
-!endprocedure
-
-!unquoted procedure PluginData($alias, $label="none")
-Factory(usecase, $alias, $pluginBgLight, $label)
-!endprocedure
-
-!unquoted procedure EngineData($alias, $label="none")
-Factory(usecase, $alias, $engineBgLight, $label)
-!endprocedure
-
-!unquoted procedure ServiceData($alias, $label="none")
-Factory(usecase, $alias, $serviceBgLight, $label)
-!endprocedure
-
-!unquoted procedure CloudData($alias, $label="none")
-Factory(usecase, $alias, $cloudBgLight, $label)
-!endprocedure
-
-' ================================
-' Wrap
-'
-!unquoted procedure Wrap($alias, $label="none")
-Factory(package, $alias, $bgLight, $label)
-!endprocedure
-
-!unquoted procedure ClearWrap($alias, $label="none")
-Factory(package, $alias, transparent, $label)
-!endprocedure
-
-!unquoted procedure AppWrap($alias, $label="none")
-Factory(package, $alias, $appBgLight, $label)
-!endprocedure
-
-!unquoted procedure PluginWrap($alias, $label="none")
-Factory(package, $alias, $pluginBgLight, $label)
-!endprocedure
-
-!unquoted procedure EngineWrap($alias, $label="none")
-Factory(package, $alias, $engineBgLight, $label)
-!endprocedure
-
-!unquoted procedure ServiceWrap($alias, $label="none")
-Factory(package, $alias, $serviceBgLight, $label)
-!endprocedure
-
-!unquoted procedure CloudWrap($alias, $label="none")
-Factory(package, $alias, $cloudBgLight, $label)
-!endprocedure
-
-' ================================
-' Pack - Dark Wrap
-'
-!unquoted procedure Pack($alias, $label="none")
-Factory(package, $alias, $bgDark, $label)
-!endprocedure
-
-!unquoted procedure ClearPack($alias, $label="none")
-Factory(package, $alias, transparent, $label)
-!endprocedure
-
-!unquoted procedure AppPack($alias, $label="none")
-Factory(package, $alias, $appBgDark, $label)
-!endprocedure
-
-!unquoted procedure PluginPack($alias, $label="none")
-Factory(package, $alias, $pluginBgDark, $label)
-!endprocedure
-
-!unquoted procedure EnginePack($alias, $label="none")
-Factory(package, $alias, $engineBgDark, $label)
-!endprocedure
-
-!unquoted procedure ServicePack($alias, $label="none")
-Factory(package, $alias, $serviceBgDark, $label)
-!endprocedure
-
-!unquoted procedure CloudPack($alias, $label="none")
-Factory(package, $alias, $cloudBgDark, $label)
+!unquoted procedure Data($alias, $label="none", $bg=$bgDk)
+Factory(usecase, $alias, $bg, $label)
 !endprocedure
 
 ' ================================
 ' DB - Database Container
 '
-!unquoted procedure Db($alias, $label="none")
-Factory(database, $alias, $bgDark, $label)
+!unquoted procedure Db($alias, $label="none", $bg=$bgDk)
+Factory(database, $alias, $bg, $label)
 !endprocedure
 
-!unquoted procedure AppDb($alias, $label="none")
-Factory(database, $alias, $appBgDark, $label)
+' ================================
+' Note (File)
+'
+'
+!unquoted procedure Note($alias, $label="none", $bg=$bgDk)
+Factory(file, $alias, $bg, $label)
 !endprocedure
 
-!unquoted procedure PluginDb($alias, $label="none")
-Factory(database, $alias, $pluginBgDark, $label)
+' ================================
+' Dir (Folder)
+'
+'
+!unquoted procedure Dir($alias, $label="none", $bg=$bgDk)
+Factory(folder, $alias, $bg, $label)
 !endprocedure
 
-!unquoted procedure EngineDb($alias, $label="none")
-Factory(database, $alias, $engineBgDark, $label)
+' ================================
+' Frame
+'
+'
+!unquoted procedure Frame($alias, $label="none", $bg=$bgDk)
+Factory(frame, $alias, $bg, $label)
 !endprocedure
 
-!unquoted procedure ServiceDb($alias, $label="none")
-Factory(database, $alias, $serviceBgDark, $label)
+' ================================
+' Algo (Algorithm)
+'
+'
+!unquoted procedure Algo($alias, $label="none", $bg=$bgDk)
+Factory(queue, $alias, $bg, $label)
 !endprocedure
 
-!unquoted procedure CloudDb($alias, $label="none")
-Factory(database, $alias, $cloudBgDark, $label)
+' ================================
+' Buff (Double Buffer)
+'
+'
+!unquoted procedure Buff($alias, $label="none", $bg=$bgDk)
+Factory(collections, $alias, $bg, $label)
+!endprocedure
+
+' ================================
+' Plugin
+'
+'
+!unquoted procedure Plugin($alias, $label="none", $bg=$bgDk)
+Factory(component, $alias, $bg, $label)
+!endprocedure
+
+' ================================
+' User
+'
+'
+!unquoted procedure User($alias, $label="none", $bg=$bgDk)
+Factory(person, $alias, $bg, $label)
+!endprocedure
+
+' ================================
+' Wrap
+'
+!unquoted procedure Pack($alias, $label="none", $bg=$bgLt)
+Factory(package, $alias, $bg, $label)
+!endprocedure
+
+' Clear Wrap
+!unquoted procedure Wrap($alias, $label="none")
+Factory(package, $alias, transparent, $label)
 !endprocedure
 
 ' ================================
@@ -320,19 +258,16 @@ skinparam nodesep 50
 skinparam package {
   Style Rectangle
   BackgroundColor transparent
-  BorderColor $borderDark
+  FontColor $fontLt
+  BorderColor $borderDk
   BorderThickness 1
   shadowing false
   RoundCorner 25
 
-  BackgroundColor<<App>> $unityBgLight
-  BackgroundColor<<App2>> $unityBgDark
-  BackgroundColor<<Plugin>> $pluginBgLight
-  BackgroundColor<<Plugin2>> $pluginBgDark
-  BackgroundColor<<Service>> $serviceBgLight
-  BackgroundColor<<Service2>> $serviceBgDark
-  BackgroundColor<<Cloud>> $cloudBgLight
-  BackgroundColor<<Cloud2>> $cloudBgDark
+  BackgroundColor<<App>> $bgLt
+  BackgroundColor<<Plugin>> $bgPluginLt
+  BackgroundColor<<Service>> $bgServiceLt
+  BackgroundColor<<Cloud>> $bgCloudLt
 
   ArrowColor black
 
@@ -344,10 +279,24 @@ skinparam package {
 '
 skinparam rectangle {
   BackgroundColor transparent
-  BorderColor $borderDark
+  FontColor $fontLt
+  BorderColor $borderDk
   BorderThickness 1
   shadowing false
   RoundCorner 15
+
+  ArrowColor black
+}
+
+' ================================
+' Storage Style
+'
+skinparam storage {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
 
   ArrowColor black
 }
@@ -357,7 +306,113 @@ skinparam rectangle {
 '
 skinparam usecase {
   BackgroundColor transparent
-  BorderColor $borderDark
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Hexagon Style
+'
+skinparam hexagon {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Node Style
+'
+skinparam node {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+
+' ================================
+' Card Style
+'
+skinparam card {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' File Style
+'
+skinparam file {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Folder Style
+'
+skinparam folder {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Queue Style
+'
+skinparam queue {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Person Style
+'
+skinparam person {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Actor Style
+'
+skinparam actor {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
   BorderThickness 1
   shadowing false
 
@@ -369,7 +424,73 @@ skinparam usecase {
 '
 skinparam Database {
   BackgroundColor transparent
-  BorderColor $borderDark
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Cloud Style
+'
+skinparam cloud {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Collections Style
+'
+skinparam collections {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Component Style
+'
+skinparam component {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Package Style
+'
+skinparam package {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
+  BorderThickness 1
+  shadowing false
+
+  ArrowColor black
+}
+
+' ================================
+' Frame Style
+'
+skinparam frame {
+  BackgroundColor transparent
+  FontColor $fontLt
+  BorderColor $borderDk
   BorderThickness 1
   shadowing false
 

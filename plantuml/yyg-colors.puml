@@ -1,0 +1,110 @@
+' Yyg Custom PlantUML Configs and Shortcuts
+' - This defines color variables for use in various plantuml diagrams, providing a more consistent style among my graphics.
+'  https://github.com/theyyg/yyg-nix-config/tree/master/plantuml
+'  patterned after the plant uml standard library https://plantuml.com/stdlib
+'
+' Download and install plantuml https://plantuml.com/download
+' Install plantuml-mode via melpa
+'
+' To use in org mode:
+'  First: Run these scripts in a scratch buffer or add to emacs config
+'   Scratch:
+'    (setq org-plantuml-jar-path (expand-file-name "/home/you/path/to/plantuml.jar"))
+'    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+'    (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+'
+'   .emacs.el:
+'    (setq org-plantuml-jar-path (expand-file-name "/home/you/path/to/plantuml.jar"))
+'
+'    (org-babel-do-load-languages
+'     'org-babel-load-languages
+'     '((plantuml . t)))
+'
+'    (defun init-plantuml()
+'      (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+'      (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+'      )
+'
+'    (add-hook 'org-mode-hook 'init-plantuml)
+'
+' Using PlantUML in org-mode
+'  Create a plantuml source block:
+'   #+begin_src plantuml :file ./chart-name.png
+'   title Chart Title
+'
+'
+'   #+end_src
+'
+'  Add the following line at the top of the org file to prevent evaluation prompts:
+'  # -*- org-confirm-babel-evaluate: nil; -*-
+'
+' or add this sections to the bottom of the org file:
+'
+' * Local Variables :noexport:
+' Local Variables:
+' org-confirm-babel-evaluate: nil
+' End:
+
+'
+'  Publish plant-uml in org doc by executing C-c C-e h o
+
+' ================================
+' Define Colors
+'
+!$borderDk = "#333333"
+!$borderLt = "#888888"
+' Pink
+!$bgPinkLt = "#DB6ED9"
+!$bgPinkDk = "#AD00AA"
+' Red
+!$bgRedLt = "#D47DA7"
+!$bgRedDk = "#AD0100"
+' Orange
+!$bgOrangeLt = "#D9954C"
+!$bgOrangeDk = "#AD5800"
+' Yellow
+!$bgYellowLt = "#A9AD00"
+!$bgYellowDk = "#7D8000"
+' Green
+!$bgGreenLt = "#84B835"
+!$bgGreenDk = "#5B8025"
+' Blue
+!$bgBlueLt = "#7DBCD4"
+!$bgBlueDk = "#007DAD"
+' Indigo
+!$bgIndigoLt = "#5A47FF"
+!$bgIndigoDk = "#4A47D1"
+' Purple
+!$bgPurpleLt = "#AA7DD4"
+!$bgPurpleDk = "#5900AD"
+' Grey
+!$bgGreyLt = "#AAAAAA"
+!$bgGreyDk = "#999999"
+
+' Categories
+!$bgCloudLt = $bgPinkLt
+!$bgCloudDk = $bgPinkDk
+!$bgLocalLt = $bgRedLt
+!$bgLocalDk = $bgRedDk
+!$bgAppLt = $bgOrangeLt
+!$bgAppDk = $bgOrangeDk
+!$bgPluginLt = $bgYellowLt
+!$bgPluginDk = $bgYellowDk
+!$bgServiceLt = $bgGreenLt
+!$bgServiceDk = $bgGreenDk
+!$bgEngineLt = $bgBlueLt
+!$bgEngineDk = $bgBlueDk
+!$bgSystemLt = $bgIndigoLt
+!$bgSystemDk = $bgIndigoDk
+!$bgDeviceLt = $bgPurpleLt
+!$bgDeviceDk = $bgPurpleDk
+!$bgLt = $bgGreyLt
+!$bgDk = $bgGreyDk
+!$border = $borderDk
+
+!$aud = "#33F,bold"
+!$audref = "#33F,dashed"
+!$ctl = "#000,bold"
+!$ctlref = "#000,dashed"
+!$hid = "hidden"
+
