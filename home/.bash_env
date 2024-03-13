@@ -5,6 +5,7 @@ export LS_COLORS
 
 export GIT_EDITOR=emacs
 export PATH=~/dev/git/yyg-nix-config/bin:$PATH
+export PATH=~/.local/bin:$PATH
 
 # Windows Subsystem for Linux (Ubuntu)
 if grep -qi microsoft /proc/version; then
