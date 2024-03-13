@@ -101,6 +101,7 @@
 !$bgLt = $bgGreyLt
 !$bgDk = $bgGreyDk
 !$border = $borderDk
+!$bgClear = "transparent"
 
 !$aud = "#33F,bold"
 !$audref = "#33F,dashed"

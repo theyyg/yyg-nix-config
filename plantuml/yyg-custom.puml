@@ -184,6 +184,14 @@ Factory(folder, $alias, $bg, $label)
 !endprocedure
 
 ' ================================
+' List (Buff)
+'
+'
+!unquoted procedure List($alias, $label="none", $bg=$bgDk)
+Factory(collections, $alias, $bg, $label)
+!endprocedure
+
+' ================================
 ' Frame
 '
 '
@@ -196,7 +204,7 @@ Factory(frame, $alias, $bg, $label)
 '
 '
 !unquoted procedure Algo($alias, $label="none", $bg=$bgDk)
-Factory(queue, $alias, $bg, $label)
+Factory(action, $alias, $bg, $label)
 !endprocedure
 
 ' ================================
@@ -204,7 +212,7 @@ Factory(queue, $alias, $bg, $label)
 '
 '
 !unquoted procedure Buff($alias, $label="none", $bg=$bgDk)
-Factory(collections, $alias, $bg, $label)
+Factory(queue, $alias, $bg, $label)
 !endprocedure
 
 ' ================================
@@ -221,6 +229,14 @@ Factory(component, $alias, $bg, $label)
 '
 !unquoted procedure User($alias, $label="none", $bg=$bgDk)
 Factory(person, $alias, $bg, $label)
+!endprocedure
+
+' ================================
+' Tool
+'
+'
+!unquoted procedure Tool($alias, $label="none", $bg=$bgDk)
+Factory(process, $alias, $bg, $label)
 !endprocedure
 
 ' ================================
