@@ -534,6 +534,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 #+begin_src emacs-lisp
 ;; Revert the current buffer (useful when switching between git branches)
 (global-set-key (kbd "C-<escape>") 'revert-buffer)
+(global-set-key (kbd "C-c <escape> <escape>") 'revert-buffer)
 
 ;; Clear the entire current buffer (useful for resetting the shell buffer to track new content)
 (global-set-key (kbd "C-M-<escape>") 'erase-buffer)
@@ -641,145 +642,145 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 #+begin_src emacs-lisp
 
-    (defun efs/org-mode-setup ()
-      (org-indent-mode)
-      (variable-pitch-mode 1)
-      (visual-line-mode 1))
+  (defun efs/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (visual-line-mode 1))
 
-    (use-package org
-      :mode (("\\.org$" . org-mode))
-      :ensure org-contrib
-      :hook (org-mode . efs/org-mode-setup)
-      :bind ( ;; insert global bindings here
-             :map org-mode-map
-                  ("C-," . 'prev-window))
-      :config
-      (setq org-ellipsis " ▾"
-            org-hide-emphasis-markers t)
+  (use-package org
+    :mode (("\\.org$" . org-mode))
+    :ensure org-contrib
+    :hook (org-mode . efs/org-mode-setup)
+    :bind ( ;; insert global bindings here
+           :map org-mode-map
+                ("C-," . 'prev-window))
+    :config
+    (setq org-ellipsis " ▾"
+          org-hide-emphasis-markers t)
 
-      (setq org-agenda-start-with-log-mode t)
-      (setq org-log-done 'time)
-      (setq org-log-into-drawer t)
+    (setq org-agenda-start-with-log-mode t)
+    (setq org-log-done 'time)
+    (setq org-log-into-drawer t)
+    (setq org-id-track-globally t)
 
-      ;(setq org-agenda-files
-      ;      '("~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org"
-      ;        "~/Projects/Code/emacs-from-scratch/OrgFiles/Habits.org"
-      ;        "~/Projects/Code/emacs-from-scratch/OrgFiles/Birthdays.org"))
+    (setq org-agenda-files
+          '("~/dev/notes/tasks.org"
+            "~/dev/notes/habits.org"))
 
-      (require 'org-habit)
-      (add-to-list 'org-modules 'org-habit)
-      (setq org-habit-graph-column 60)
+    (require 'org-habit)
+    (add-to-list 'org-modules 'org-habit)
+    (setq org-habit-graph-column 60)
 
-      (setq org-todo-keywords
-            '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-              ;(sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")
-              (sequence "ASSIGNED(a)" "IN PROGRESS(i)" "IMPLEMENTED(m)" "INTEGRATED(g)" "|" "COMPLETED(c)" "CANCELED(k@)")))
+    (setq org-todo-keywords
+          '((sequence "TODO(t)" "IN PROGRESS(i)" "|" "DONE(d!)")
+            ;(sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")
+            (sequence "BACKLOG(b)" "ASSIGNED(a)" "HOLD(h)" "ON DECK(o)" "PLAN(p)" "IN PROGRESS(i)" "IMPLEMENTED(m)" "INTEGRATED(g)" "REVIEW(v)" "|" "POSTPONED(w!)" "COMPLETED(c!)" "CANCELED(k@)")))
 
-      (setq org-refile-targets
-            '(("Archive.org" :maxlevel . 1)
-              ("Tasks.org" :maxlevel . 1)))
+    (setq org-refile-targets
+          '(("archive.org" :maxlevel . 1)
+            ("tasks.org" :maxlevel . 1)))
 
-      ;; Save Org buffers after refiling!
-      (advice-add 'org-refile :after 'org-save-all-org-buffers)
+    ;; Save Org buffers after refiling!
+    (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-      (setq org-tag-alist
-            '((:startgroup)
-                                            ; Put mutually exclusive tags here
-              (:endgroup)
-              ("@errand" . ?E)
-              ("@home" . ?H)
-              ("@work" . ?W)
-              ("agenda" . ?a)
-              ("planning" . ?p)
-              ("publish" . ?P)
-              ("batch" . ?b)
-              ("note" . ?n)
-              ("idea" . ?i)))
+    (setq org-tag-alist
+          '((:startgroup)
+                                          ; Put mutually exclusive tags here
+            (:endgroup)
+            ("@errand" . ?E)
+            ("@home" . ?H)
+            ("@work" . ?W)
+            ("agenda" . ?a)
+            ("planning" . ?p)
+            ("publish" . ?P)
+            ("batch" . ?b)
+            ("note" . ?n)
+            ("idea" . ?i)))
 
-      ;; Configure custom agenda views
-      (setq org-agenda-custom-commands
-            '(("d" "Dashboard"
-               ((agenda "" ((org-deadline-warning-days 7)))
-                (todo "NEXT"
-                      ((org-agenda-overriding-header "Next Tasks")))
-                (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+    ;; Configure custom agenda views
+    (setq org-agenda-custom-commands
+          '(("d" "Dashboard"
+             ((agenda "" ((org-deadline-warning-days 7)))
+              (todo "NEXT"
+                    ((org-agenda-overriding-header "Next Tasks"))) 
+             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-              ("n" "Next Tasks"
-               ((todo "NEXT"
-                      ((org-agenda-overriding-header "Next Tasks")))))
+            ("n" "Next Tasks"
+             ((todo "NEXT"
+                    ((org-agenda-overriding-header "Next Tasks")))))
 
-              ("W" "Work Tasks" tags-todo "+work-email")
+            ("W" "Work Tasks" tags-todo "+work-email")
 
-              ;; Low-effort next actions
-              ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-               ((org-agenda-overriding-header "Low Effort Tasks")
-                (org-agenda-max-todos 20)
-                (org-agenda-files org-agenda-files)))
+            ;; Low-effort next actions
+            ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+             ((org-agenda-overriding-header "Low Effort Tasks")
+              (org-agenda-max-todos 20)
+              (org-agenda-files org-agenda-files)))
 
-              ("w" "Workflow Status"
-               ((todo "WAIT"
-                      ((org-agenda-overriding-header "Waiting on External")
-                       (org-agenda-files org-agenda-files)))
-                (todo "REVIEW"
-                      ((org-agenda-overriding-header "In Review")
-                       (org-agenda-files org-agenda-files)))
-                (todo "PLAN"
-                      ((org-agenda-overriding-header "In Planning")
-                       (org-agenda-todo-list-sublevels nil)
-                       (org-agenda-files org-agenda-files)))
-                (todo "BACKLOG"
-                      ((org-agenda-overriding-header "Project Backlog")
-                       (org-agenda-todo-list-sublevels nil)
-                       (org-agenda-files org-agenda-files)))
-                (todo "READY"
-                      ((org-agenda-overriding-header "Ready for Work")
-                       (org-agenda-files org-agenda-files)))
-                (todo "ACTIVE"
-                      ((org-agenda-overriding-header "Active Projects")
-                       (org-agenda-files org-agenda-files)))
-                (todo "COMPLETED"
-                      ((org-agenda-overriding-header "Completed Projects")
-                       (org-agenda-files org-agenda-files)))
-                (todo "CANC"
-                      ((org-agenda-overriding-header "Cancelled Projects")
-                       (org-agenda-files org-agenda-files)))))))
+            ("w" "Workflow Status"
+             ((todo "WAIT"
+                    ((org-agenda-overriding-header "Waiting on External")
+                     (org-agenda-files org-agenda-files)))
+              (todo "REVIEW"
+                    ((org-agenda-overriding-header "In Review")
+                     (org-agenda-files org-agenda-files)))
+              (todo "PLAN"
+                    ((org-agenda-overriding-header "In Planning")
+                     (org-agenda-todo-list-sublevels nil)
+                     (org-agenda-files org-agenda-files)))
+              (todo "BACKLOG"
+                    ((org-agenda-overriding-header "Project Backlog")
+                     (org-agenda-todo-list-sublevels nil)
+                     (org-agenda-files org-agenda-files)))
+              (todo "READY"
+                    ((org-agenda-overriding-header "Ready for Work")
+                     (org-agenda-files org-agenda-files)))
+              (todo "ACTIVE"
+                    ((org-agenda-overriding-header "Active Projects")
+                     (org-agenda-files org-agenda-files)))
+              (todo "COMPLETED"
+                    ((org-agenda-overriding-header "Completed Projects")
+                     (org-agenda-files org-agenda-files)))
+              (todo "CANC"
+                    ((org-agenda-overriding-header "Cancelled Projects")
+                     (org-agenda-files org-agenda-files)))))))
 
-      (setq org-capture-templates
-            `(("t" "Tasks / Projects")
-              ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
-               "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+    (setq org-capture-templates
+          `(("t" "Tasks / Projects")
+            ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
+             "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
-              ("j" "Journal Entries")
-              ("jj" "Journal" entry
-               (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-               "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-               ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-               :clock-in :clock-resume
-               :empty-lines 1)
-              ("jm" "Meeting" entry
-               (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-               "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-               :clock-in :clock-resume
-               :empty-lines 1)
+            ("j" "Journal Entries")
+            ("jj" "Journal" entry
+             (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+             ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+             :clock-in :clock-resume
+             :empty-lines 1)
+            ("jm" "Meeting" entry
+             (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+             :clock-in :clock-resume
+             :empty-lines 1)
 
-              ("w" "Workflows")
-              ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-               "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+            ("w" "Workflows")
+            ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
 
-              ("m" "Metrics Capture")
-              ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
-               "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+            ("m" "Metrics Capture")
+            ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
+             "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
 
-      (define-key global-map (kbd "C-c j")
-        (lambda () (interactive) (org-capture nil "jj")))
+    (define-key global-map (kbd "C-c j")
+      (lambda () (interactive) (org-capture nil "jj")))
 
-      (efs/org-font-setup)
+    (efs/org-font-setup)
 
-                                            ; Add ODT export (this was already possible, but adding for docx support)
-      (require 'ox-odt)
+                                          ; Add ODT export (this was already possible, but adding for docx support)
+    (require 'ox-odt)
 
-                                            ; Use docx as the default ODT export format (good for Google-docs)
-      (setq org-odt-preferred-output-format "docx"))
+                                          ; Use docx as the default ODT export format (good for Google-docs)
+    (setq org-odt-preferred-output-format "docx"))
 
 #+end_src
 
@@ -835,7 +836,7 @@ Exporting org documents is the best format(s) to share them; however when export
 
 Alternatively, adding the following section to the bottom of an org file will also set the appropriate variable and move the confirmation to when the file is loaded.
 
-#+begin_src :notangle
+#+begin_src :notangle :tangle no
  * Local Variables :noexport:
 Local Variables:
 org-confirm-babel-evaluate: nil
@@ -1162,7 +1163,7 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
 *** dap-mode
 
-#+begin_src emacs-lisp :notangle
+#+begin_src emacs-lisp :notangle :tangle no
   ;; optionally if you want to use debugger
   (use-package dap-mode)
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
@@ -1353,6 +1354,13 @@ Taken from https://www.draketo.de/software/emacs-javascript.html
   ;;  (customize-variable math-preview-command
 #+end_src
 
+** FMOD
+*** XML in FMOD Project
+
+#+begin_src emacs-lisp
+  ;; NXML mode for FMOD Designer Projects
+  (add-to-list 'auto-mode-alist '("\\.fdp\\'" . nxml-mode)) 
+#+end_src
 ** GDB
 
 #+begin_src emacs-lisp :tangle :tangle ./.emacs.d/sandbox.el
@@ -1366,7 +1374,15 @@ Taken from https://www.draketo.de/software/emacs-javascript.html
 #+end_src
 
 * Communication
+** Atomic-Chrome
 
+Atomic-Chrome allows you to edit text in a web page using emacs.  You need to install the [[https://chrome.google.com/webstore/detail/atomic-chrome/lhaoghhllmiaaagaffababmkdllgfcmc][atomic chrome extension]] or the [[https://chrome.google.com/webstore/detail/ghosttext/godiecgffnchndlihlpaajjcplehddca/related][ghost text extension]] for the chrome browser.  Ghost text also works in firefox.
+
+#+begin_src emacs-lisp
+  (use-package atomic-chrome
+    :init (atomic-chrome-start-server)
+    )
+#+end_src
 * Sandbox
 
 The sandbox is my area to try out new emacs packages or lisp snippets.
@@ -1383,29 +1399,6 @@ The sandbox is my area to try out new emacs packages or lisp snippets.
 ** Smooth Scrolling
 
 #+begin_src emacs-lisp
-;; Smooth scrolling by pixel (emacs 26+)
-;; - https://emacs.stackexchange.com/questions/10354/smooth-mouse-scroll-for-inline-images
-;;; Scrolling.
-;; Good speed and allow scrolling through large images (pixel-scroll).
-;; Note: Scroll lags when point must be moved but increasing the number
-;;       of lines that point moves in pixel-scroll.el ruins large image
-;;       scrolling. So unfortunately I think we'll just have to live with
-;;       this.
-;(pixel-scroll-mode)
-;(setq pixel-dead-time 0) ; Never go back to the old scrolling behaviour.
-;(setq pixel-resolution-fine-flag t) ; Scroll by number of pixels instead of lines (t = frame-char-height pixels).
-;(setq mouse-wheel-scroll-amount '(3)) ; Distance in pixel-resolution to scroll each mouse wheel event.
-;(setq mouse-wheel-progressive-speed nil) ; Progressive speed is too fast for me.
-;(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-;(setq scroll-conservatively 50) ;; Scroll this many lines before jumping and centering (max 101)
-;(setq auto-window-vscroll t) ;; Scroll smoothly over tall lines (inline images)
-;(setq scroll-step 1) ;; keyboard scroll one line at a time
-;(setq scroll-margin 3) ;; Number of lines as margin at top of bottom after jump
-
-;; (setq scroll-up-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
-;; (setq scroll-down-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
-;; (setq scroll-preserve-screen-position 't) ;; Point preserved or moved when scrolling
-
 ; Autosave every 500 typed characters
 ;(setq auto-save-interval 500)
 
@@ -1417,20 +1410,20 @@ The sandbox is my area to try out new emacs packages or lisp snippets.
 ;;       of lines that point moves in pixel-scroll.el ruins large image
 ;;       scrolling. So unfortunately I think we'll just have to live with
 ;;       this.
-;;(pixel-scroll-mode)
-;;(setq pixel-dead-time 0) ; Never go back to the old scrolling behaviour.
-;;(setq pixel-resolution-fine-flag 't) ; Scroll by number of pixels instead of lines (t = frame-char-height pixels).
+(pixel-scroll-mode)
+(setq pixel-dead-time 0) ; Never go back to the old scrolling behaviour.
+(setq pixel-resolution-fine-flag 't) ; Scroll by number of pixels instead of lines (t = frame-char-height pixels).
 (setq mouse-wheel-scroll-amount '(1)) ; Distance in pixel-resolution to scroll each mouse wheel event.
-(setq mouse-wheel-progressive-speed 't) ; Progressive speed is too fast for me.
+(setq mouse-wheel-progressive-speed nil) ; Progressive speed is too fast for me.
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 ;(setq mouse-wheel-tilt-scroll 't) ;; scroll window under mouse
-(setq scroll-conservatively 40) ;; Scroll this many lines before jumping and centering (max 101)
+;(setq scroll-conservatively 40) ;; Scroll this many lines before jumping and centering (max 101)
 (setq auto-window-vscroll 't) ;; Scroll smoothly over tall lines (inline images)
-(setq scroll-step 1) ;; keyboard scroll one line at a time
-(setq scroll-margin 3) ;; Number of lines as margin at top of bottom after jump
+;(setq scroll-step 1) ;; keyboard scroll one line at a time
+(setq scroll-margin 2) ;; Number of lines as margin at top of bottom after jump
 ;; (setq scroll-up-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
 ;; (setq scroll-down-aggressively 0.1) ;; Where to position jump point after agressive scroll (0-1)
-(setq scroll-preserve-screen-position 't) ;; Point preserved or moved when scrolling
+;(setq scroll-preserve-screen-position 't) ;; Point preserved or moved when scrolling
 
 #+end_src
 
@@ -1439,4 +1432,49 @@ The sandbox is my area to try out new emacs packages or lisp snippets.
 #+begin_src emacs-lisp
 ;(require 'sublimity)
 ;(require 'sublimity-scroll) ;; Smooth scrolling when jumping
+#+end_src
+
+** Jira Integration
+
+#+begin_src emacs-lisp :notangle :tangle no
+  (use-package ejira
+  :init
+  (setq jiralib2-url              "https://iracing.atlassian.net"
+        jiralib2-auth             'basic
+        jiralib2-user-login-name  "my-jira-username"
+        jiralib2-token            nil
+
+        ;; NOTE, this directory needs to be in `org-agenda-files'`
+        ejira-org-directory       "~/dev/jira"
+        ejira-projects            '("EJ" "JL2")
+
+        ejira-priorities-alist    '(("Highest" . ?A)
+                                    ("High"    . ?B)
+                                    ("Medium"  . ?C)
+                                    ("Low"     . ?D)
+                                    ("Lowest"  . ?E))
+        ejira-todo-states-alist   '(("To Do"       . 1)
+                                    ("In Progress" . 2)
+                                    ("Done"        . 3)))
+  :config
+  ;; Tries to auto-set custom fields by looking into /editmeta
+  ;; of an issue and an epic.
+  (add-hook 'jiralib2-post-login-hook #'ejira-guess-epic-sprint-fields)
+
+  ;; They can also be set manually if autoconfigure is not used.
+  ;; (setq ejira-sprint-field       'customfield_10001
+  ;;       ejira-epic-field         'customfield_10002
+  ;;       ejira-epic-summary-field 'customfield_10004)
+
+  (require 'ejira-agenda)
+
+  ;; Make the issues visisble in your agenda by adding `ejira-org-directory'
+  ;; into your `org-agenda-files'.
+  (add-to-list 'org-agenda-files ejira-org-directory)
+
+  ;; Add an agenda view to browse the issues that
+  (org-add-agenda-custom-command
+   '("j" "My JIRA issues"
+     ((ejira-jql "resolution = unresolved and assignee = currentUser()"
+                 ((org-agenda-overriding-header "Assigned to me")))))))
 #+end_src
