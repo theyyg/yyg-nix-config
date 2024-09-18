@@ -52,29 +52,29 @@
 ' ================================
 ' Block
 '
-!unquoted procedure Block($e_alias, $e_label, $e_color=$bgLt)
-entity "$e_label" as $e_alias $e_color
+!procedure Block($e_alias, $e_label, $e_color=$clrBg)
+entity "$e_label" as $e_alias #get_color($e_color)
 !endprocedure
 
-!unquoted procedure CreateBlock($e_alias, $e_label, $e_color=$bgLt)
-create entity "$e_label" as $e_alias $e_color
+!procedure CreateBlock($e_alias, $e_label, $e_color=$clrBg)
+create entity "$e_label" as $e_alias #get_color($e_color)
 !endprocedure
 
 ' ================================
 ' Index (Element of a vector)
 '
-!unquoted procedure Index($e_alias, $e_label, $e_color=$border)
+!unquoted procedure Index($e_alias, $e_label, $e_color=$clrBorder)
 control "For Each \n $e_label" as $e_alias
 !endprocedure
 
-!unquoted procedure CreateIndex($e_alias, $e_label, $e_color=$border)
+!unquoted procedure CreateIndex($e_alias, $e_label, $e_color=$clrBorder)
 create control "For Each \n $e_label" as $e_alias
 !endprocedure
 
 ' ================================
 ' Wrap
 '
-!unquoted procedure Wrap($e_name, $e_color=$bgLt)
+!unquoted procedure Wrap($e_name, $e_color=$clrBg)
 box "$e_name" $e_color
 !endprocedure
 
@@ -85,7 +85,7 @@ end box
 ' ================================
 ' Group
 '
-!unquoted procedure Group($e_name, $e_color=$bgLt)
+!unquoted procedure Group($e_name, $e_color=$clrBg)
 group "$e_name" $e_color
 !endprocedure
 
@@ -96,7 +96,7 @@ end group
 ' ================================
 ' Loop
 '
-!unquoted procedure Loop($name, $e_color=$bgLt)
+!unquoted procedure Loop($name, $e_color=$clrBg)
 loop "$name" $e_color
 !endprocedure
 
@@ -108,8 +108,8 @@ end loop
 ' Style
 '
 skinparam sequence {
-  LifeLineBorderColor $border
-  LifeLineBackgroundColor $bgLt
+  LifeLineBorderColor $clrBorder
+  LifeLineBackgroundColor $clrBg
 
   ArrowColor black
 }
@@ -125,7 +125,7 @@ skinparam sequence {
 
 skinparam SequenceParticipant{
   BackgroundColor transparent
-  BorderColor $border
+  BorderColor $clrBorder
   BorderThickness 1
   Shadowing false
 }
@@ -138,23 +138,23 @@ skinparam SequenceBox{
 }
 
 skinparam SequenceGroup{
-  BackgroundColor $frameBg1
+  BackgroundColor $clrBg
   BodyBackgroundColor transparent
-  BorderColor $border
+  BorderColor $clrBorder
   BorderThickness 0
   Shadowing false
 }
 
 skinparam Control{
   BackgroundColor transparent
-  BorderColor $border
+  BorderColor $clrBorder
   BorderThickness 1
   Shadowing false
 }
 
 skinparam Entity{
   BackgroundColor transparent
-  BorderColor $border
+  BorderColor $clrBorder
   BorderThickness 1
   Shadowing false
 }

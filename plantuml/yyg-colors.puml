@@ -51,61 +51,126 @@
 ' ================================
 ' Define Colors
 '
-!$borderDk = "#333333"
-!$borderLt = "#888888"
+
+' Border Outline
+!$clrBorderLt = "989898"
+!$clrBorder = "686868"
+!$clrBorderDk = "101010"
+
+' Text
+!$clrTextLt = "FFFFFF"
+!$clrText = "000000"
+!$clrTextDk = "000000"
+
 ' Pink
-!$bgPinkLt = "#DB6ED9"
-!$bgPinkDk = "#AD00AA"
+!$clrPinkLt = "FF80CA"
+!$clrPink = "CC338C"
+!$clrPinkDk = "8E0B6D"
 ' Red
-!$bgRedLt = "#D47DA7"
-!$bgRedDk = "#AD0100"
+!$clrRedLt = "FF8580"
+!$clrRed = "CC3933"
+!$clrRedDk = "8E0B0B"
 ' Orange
-!$bgOrangeLt = "#D9954C"
-!$bgOrangeDk = "#AD5800"
+!$clrOrangeLt = "FFAF80"
+!$clrOrange = "CC6C33"
+!$clrOrangeDk = "8E310B"
 ' Yellow
-!$bgYellowLt = "#A9AD00"
-!$bgYellowDk = "#7D8000"
+!$clrYellowLt = "FFDA80"
+!$clrYellow = "CC9F33"
+!$clrYellowDk = "8E680B"
+' Grass
+!$clrGrassLt = "EFFF80"
+!$clrGrass = "B9CC33"
+!$clrGrassDk = "5D8E0B"
 ' Green
-!$bgGreenLt = "#84B835"
-!$bgGreenDk = "#5B8025"
+!$clrGreenLt = "80FF8F"
+!$clrGreen = "33CC46"
+!$clrGreenDk = "0B8E3C"
 ' Blue
-!$bgBlueLt = "#7DBCD4"
-!$bgBlueDk = "#007DAD"
+!$clrBlueLt = "80EFFF"
+!$clrBlue = "33B9CC"
+!$clrBlueDk = "0B5D8E"
 ' Indigo
-!$bgIndigoLt = "#5A47FF"
-!$bgIndigoDk = "#4A47D1"
+!$clrIndigoLt = "8A80FF"
+!$clrIndigo = "4033CC"
+!$clrIndigoDk = "160B8E"
 ' Purple
-!$bgPurpleLt = "#AA7DD4"
-!$bgPurpleDk = "#5900AD"
+!$clrPurpleLt = "DF80FF"
+!$clrPurple = "A633CC"
+!$clrPurpleDk = "570B8E"
 ' Grey
-!$bgGreyLt = "#AAAAAA"
-!$bgGreyDk = "#999999"
+!$clrGreyLt = "BFBFBF"
+!$clrGrey = "808080"
+!$clrGreyDk = "4C4C4C"
 
 ' Categories
-!$bgCloudLt = $bgPinkLt
-!$bgCloudDk = $bgPinkDk
-!$bgLocalLt = $bgRedLt
-!$bgLocalDk = $bgRedDk
-!$bgAppLt = $bgOrangeLt
-!$bgAppDk = $bgOrangeDk
-!$bgPluginLt = $bgYellowLt
-!$bgPluginDk = $bgYellowDk
-!$bgServiceLt = $bgGreenLt
-!$bgServiceDk = $bgGreenDk
-!$bgEngineLt = $bgBlueLt
-!$bgEngineDk = $bgBlueDk
-!$bgSystemLt = $bgIndigoLt
-!$bgSystemDk = $bgIndigoDk
-!$bgDeviceLt = $bgPurpleLt
-!$bgDeviceDk = $bgPurpleDk
-!$bgLt = $bgGreyLt
-!$bgDk = $bgGreyDk
-!$border = $borderDk
-!$bgClear = "transparent"
+!$clrCloud = "$clrPink"
+!$clrLocal = "$clrRed"
+!$clrApp = "$clrOrange"
+!$clrPlugin = "$clrYellow"
+!$clrService = "$clrGreen"
+!$clrEngine = "$clrBlue"
+!$clrSystem = "$clrIndigo"
+!$clrDevice = "$clrPurple"
+!$clrBg = "$clrGrey"
+!$clrClear = "transparent"
 
-!$aud = "#33F,bold"
-!$audref = "#33F,dashed"
-!$ctl = "#000,bold"
-!$ctlref = "#000,dashed"
+!$aud = "33F,bold"
+!$audref = "33F,dashed"
+!$ctl = "000,bold"
+!$ctlref = "000,dashed"
 !$hid = "hidden"
 
+' ================================
+' get_color Function
+'
+!function get_color($color="$clrBg", $shade="none")
+!log get_color{$color,$shade}
+
+!if (%substr($color,0,1) == "#")
+!if ($shade == "light")
+!$fullColor = %lighten($color, 50)
+!elseif ($shade == "none")
+!$fullColor = $color
+!elseif ($shade == "dark")
+!$fullColor = %darken($color, 50)
+!endif
+!log fullColor: $fullColor
+!$fullColor = %substr($fullColor,1,6)
+!log fullColor: $fullColor
+
+!else
+!$tempColor = $color
+!while (%substr($tempColor,0,4) == "$clr")
+!$color = $tempColor
+!$tempColor = %get_variable_value($color)
+!log tempColor: $tempColor color: $color
+!endwhile
+
+!if ($shade == "light")
+!$fullColor = %get_variable_value($color + "Lt")
+!elseif ($shade == "dark")
+!$fullColor = %get_variable_value($color + "Dk")
+!else
+!$fullColor = %get_variable_value($color)
+!endif
+
+!endif
+
+!log color: $fullColor
+!return $fullColor
+!endfunction
+
+' ================================
+' flip_shade Function
+'
+!function flip_shade($shade="none")
+
+!if ($shade == "light")
+!$flipped_shade = "dark"
+!else
+!$flipped_shade = "light"
+!endif
+
+!return $flipped_shade
+!endfunction

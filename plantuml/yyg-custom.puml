@@ -46,7 +46,8 @@
 ' End:
 '
 '  Publish plant-uml in org doc by executing C-c C-e h o
-
+'
+' The following file is PlanUML preprocessor code to simplify consistent diagrams
 
 
 ' ===================================================
@@ -58,7 +59,8 @@
 ' ================================
 ' Factory Function
 '
-!unquoted procedure Factory($style, $alias, $color=bg, $label="none", $ref="false", $shade="none")
+!procedure Factory($style, $alias, $label="none", $color="clrBg", $shade="none", $ref="false")
+!log Factory{$style,$alias,$label,$color,$shade,$ref)
 !$cmd = $style + " "
 
 !if ($label != "none")
@@ -67,27 +69,19 @@
 !$cmd = $cmd + '"' + $alias + '"' + " "
 !endif
 
+!$textColor = %get_variable_value("$clrText")
 
 !if ($color != "transparent")
-
-!$fullColor = %get_variable_value("$color")
-
-!if ($shade == "light")
-!$fullColor = %get_variable_value("$color + Lt")
+!$fullColor = get_color($color, $shade)
+!$textColor = get_color("$clrText", flip_shade($shade))
+!$cmd = $cmd + " #" + $fullColor + ";line:" + $textColor
 !endif
-
-!if ($shade == "dark")
-!$fullColor = %get_variable_value("$color + Dk")
-!endif
-
-!$cmd = $cmd + ' ' + $fullColor
-
-!endif
-
 
 !if ($ref != "false")
 !$cmd = $cmd + ";line.dashed"
 !endif
+
+!$cmd = $cmd + ";text:" + $textColor
 
 !log $cmd
 $cmd
@@ -96,159 +90,159 @@ $cmd
 ' ================================
 ' Block
 '
-!unquoted procedure Block($alias, $label="none", $bg=$bgDk)
-Factory(rectangle, $alias, $bg, $label)
+!unquoted procedure Block($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(rectangle, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Round (Ellipse)
 '
-!unquoted procedure Round($alias, $label="none", $bg=$bgDk)
-Factory(storage, $alias, $bg, $label)
+!unquoted procedure Round($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(storage, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Hex (Hexagon)
 '
-!unquoted procedure Hex($alias, $label="none", $bg=$bgDk)
-Factory(hexagon, $alias, $bg, $label)
+!unquoted procedure Hex($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(hexagon, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Ref (Reference)
 '
 '
-!unquoted procedure Ref($alias, $label="none", $bg=$bgDk)
-Factory(rectangle, $alias, $bg, $label, "true", "none")
+!unquoted procedure Ref($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(rectangle, $alias, $label, $bg, "true", "none")
 !endprocedure
 
 ' ================================
 ' System
 '
 '
-!unquoted procedure System($alias, $label="none", $bg=$bgDk)
-Factory(package, $alias, $bg, $label)
+!unquoted procedure System($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(package, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Box (Black Box)
 '
 '
-!unquoted procedure Box($alias, $label="none", $bg=$bgDk)
-Factory(node, $alias, $bg, $label)
+!unquoted procedure Box($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(node, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Object
 '
 '
-!unquoted procedure Object($alias, $label="none", $bg=$bgDk)
-Factory(card, $alias, $bg, $label)
+!unquoted procedure Object($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(card, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Cloud
 '
-!unquoted procedure Cloud($alias, $label="none", $bg=$bgDk)
-Factory(cloud, $alias, $bg, $label)
+!unquoted procedure Cloud($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(cloud, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Data
 '
-!unquoted procedure Data($alias, $label="none", $bg=$bgDk)
-Factory(usecase, $alias, $bg, $label)
+!unquoted procedure Data($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(usecase, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' DB - Database Container
 '
-!unquoted procedure Db($alias, $label="none", $bg=$bgDk)
-Factory(database, $alias, $bg, $label)
+!unquoted procedure Db($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(database, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Note (File)
 '
 '
-!unquoted procedure Note($alias, $label="none", $bg=$bgDk)
-Factory(file, $alias, $bg, $label)
+!unquoted procedure Note($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(file, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Dir (Folder)
 '
 '
-!unquoted procedure Dir($alias, $label="none", $bg=$bgDk)
-Factory(folder, $alias, $bg, $label)
+!unquoted procedure Dir($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(folder, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' List (Buff)
 '
 '
-!unquoted procedure List($alias, $label="none", $bg=$bgDk)
-Factory(collections, $alias, $bg, $label)
+!unquoted procedure List($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(collections, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Frame
 '
 '
-!unquoted procedure Frame($alias, $label="none", $bg=$bgDk)
-Factory(frame, $alias, $bg, $label)
+!unquoted procedure Frame($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(frame, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Algo (Algorithm)
 '
 '
-!unquoted procedure Algo($alias, $label="none", $bg=$bgDk)
-Factory(action, $alias, $bg, $label)
+!unquoted procedure Algo($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(action, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Buff (Double Buffer)
 '
 '
-!unquoted procedure Buff($alias, $label="none", $bg=$bgDk)
-Factory(queue, $alias, $bg, $label)
+!unquoted procedure Buff($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(queue, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Plugin
 '
 '
-!unquoted procedure Plugin($alias, $label="none", $bg=$bgDk)
-Factory(component, $alias, $bg, $label)
+!unquoted procedure Plugin($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(component, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' User
 '
 '
-!unquoted procedure User($alias, $label="none", $bg=$bgDk)
-Factory(person, $alias, $bg, $label)
+!unquoted procedure User($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(person, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Tool
 '
 '
-!unquoted procedure Tool($alias, $label="none", $bg=$bgDk)
-Factory(process, $alias, $bg, $label)
+!unquoted procedure Tool($alias, $label="none", $bg=$clrBg, $shade="none")
+Factory(process, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' ================================
 ' Wrap
 '
-!unquoted procedure Pack($alias, $label="none", $bg=$bgLt)
-Factory(package, $alias, $bg, $label)
+!unquoted procedure Pack($alias, $label="none", $bg=$bg, $shade="light")
+Factory(package, $alias, $label, $bg, $shade)
 !endprocedure
 
 ' Clear Wrap
 !unquoted procedure Wrap($alias, $label="none")
-Factory(package, $alias, transparent, $label)
+Factory(package, $alias, $label, transparent)
 !endprocedure
 
 ' ================================
