@@ -99,9 +99,11 @@
 !$clrPurple = "A633CC"
 !$clrPurpleDk = "570B8E"
 ' Grey
+!$clrWhite = "FFFFFF"
 !$clrGreyLt = "BFBFBF"
 !$clrGrey = "808080"
 !$clrGreyDk = "4C4C4C"
+!$clrBlack = "000000"
 
 ' Categories
 !$clrCloud = "$clrPink"
