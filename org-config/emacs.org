@@ -24,7 +24,8 @@ The following section installs use-package through the built-in emacs package ma
   ;; Initialize package sources
   (require 'package)
 
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+  (setq package-archives '(("melpa-stable" . "https://stable.melpa.org/packages/")
+                           ("melpa" . "https://melpa.org/packages/")
                            ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
                            ;; ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -52,6 +53,16 @@ This emacs configuration is designed to work on multiple hardware systems over a
 
 ;; TODO: set variables to easily identify the environment
 
+#+end_src
+
+** MS Windows-specific Config
+This configuration only applies if emacs is run in a Microsoft Windows environment.
+
+#+begin_src emacs-lisp
+;  (when (string= system-type "windows-nt")
+;    (progn
+;      (setq diff-path "path/to/diff")
+;      ))
 #+end_src
 
 * Keybinding Configuration
@@ -101,11 +112,10 @@ This section configures basic UI settings that remove unneeded elements to make 
    ;; Display line numbers
    (column-number-mode)
    (global-display-line-numbers-mode t)
-   (setq display-line-numbers-width 6)
-
 
    ;; Disable line numbers for some modes
    (dolist (mode '(org-mode-hook
+                   org-agenda-mode-hook
                    treemacs-mode-hook
                    term-mode-hook
                    shell-mode-hook
@@ -133,22 +143,25 @@ This section configures basic UI settings that remove unneeded elements to make 
   ;; Delete old copies
   (message "Deleting old backup files...")
   (let ((week (* 60 60 24 7))
-	(current (float-time (current-time))))
+    (current (float-time (current-time))))
     (dolist (file (directory-files temporary-file-directory t))
       (when (and (backup-file-name-p file)
-		 (> (- current (float-time (fifth (file-attributes file))))
-		    week))
-	(message "%s" file)
-	(delete-file file))))
+    	 (> (- current (float-time (fifth (file-attributes file))))
+    	    week))
+    (message "%s" file)
+    (delete-file file))))
 
   ;; Set auto save files to an auto-save directory
   (setq auto-save-file-name-transforms
-	    `((".*" ,(concat user-emacs-directory "auto-save") t)))
+        `((".*" ,(concat user-emacs-directory "auto-save") t)))
 
   (setq backup-directory-alist
-	`(("." . ,(expand-file-name
-		   (concat user-emacs-directory "backups")))))
+    `(("." . ,(expand-file-name
+    	   (concat user-emacs-directory "backups")))))
 
+  (setq custom-file
+        (expand-file-name
+    	   (concat user-emacs-directory "custom.el")))
 #+end_src
 
 
@@ -204,7 +217,7 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 #+end_src
 
 #+RESULTS:
-:  Successfully installed ‘nerd-icons’ fonts to ‘/home/blaine/.local/share/fonts/’!
+:  Successfully installed ‘nerd-icons’ fonts to ‘~/.local/share/fonts/’!
 
 [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] was used for doom-modeline in prior versions 
 
@@ -631,6 +644,13 @@ Change this to an emacs-lisp src block to enable tangling
     (global-ligature-mode t))
 #+end_src
 
+** Stripe Buffer
+Alternates the color of every other line.  I use this in org tables.
+#+begin_src emacs-lisp
+  (use-package stripe-buffer
+    )
+#+end_src
+
 * UX Configuration
 * Org Mode
 
@@ -666,7 +686,11 @@ The =efs/org-font-setup= function configures various text faces to tweak the siz
     (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
     (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
     (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-column nil :background nil :inherit '(shadow))
+    (set-face-attribute 'line-number nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'line-number-current-line nil :inherit '(hl-line fixed-pitch))
+  )
 
 #+end_src
 
@@ -676,150 +700,238 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 #+begin_src emacs-lisp
 
-    (defun efs/org-mode-setup ()
-      (org-indent-mode)
-      (variable-pitch-mode 1)
-      (visual-line-mode 1))
+  (defun efs/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (visual-line-mode 1)
+    (turn-on-stripe-table-mode))
 
-    (use-package org
-      :mode (("\\.org$" . org-mode))
-      :ensure org-contrib
-      :hook (org-mode . efs/org-mode-setup)
-      :bind ( ;; insert global bindings here
-             :map org-mode-map
-                  ("C-," . 'prev-window))
-      :config
-      (setq org-ellipsis " ▾"
-            org-hide-emphasis-markers t)
+  (use-package org
+    :mode (("\\.org$" . org-mode))
+    :ensure org-contrib
+    :hook (org-mode . efs/org-mode-setup)
+    :bind ( ;; insert global bindings here
+           :map org-mode-map
+           ("C-c a" . 'org-agenda))
+    :config
+    (setq org-ellipsis " ▾"
+          org-hide-emphasis-markers t)
 
-      (setq org-agenda-start-with-log-mode t)
-      (setq org-log-done 'time)
-      (setq org-log-into-drawer t)
-      (setq org-id-track-globally t)
+    (setq org-agenda-start-with-log-mode t)
+    ;;(setq org-agenda-view-columns-initially t)
+    (setq org-log-done 'time)
+    (setq org-log-into-drawer t)
+    (setq org-id-track-globally t)
 
-      (setq org-agenda-files
-            '("~/dev/notes/tasks.org"
-              "~/dev/notes/todo.org"))
+    (setq org-agenda-files
+          '("~/dev/notes/tasks.org"
+            "~/dev/notes/todo.org"
+            "~/dev/notes/journal.org"
+            "~/dev/notes/orontes.org"
+            "~/dev/notes/ofire.org"))
 
-      (require 'org-habit)
-      (add-to-list 'org-modules 'org-habit)
-      (setq org-habit-graph-column 60)
+    (require 'org-habit)
+    (add-to-list 'org-modules 'org-habit)
+    (setq org-habit-graph-column 60)
 
-      (setq org-todo-keywords
-            '((sequence "TODO(t)" "IN PROGRESS(i)" "|" "DONE(d!)")
-              ;(sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")
-              (sequence "BACKLOG(b)" "ASSIGNED(a)" "HOLD(h)" "ON DECK(o)" "PLAN(p)" "IN PROGRESS(i)" "IMPLEMENTED(m)" "INTEGRATED(g)" "REVIEW(v)" "|" "POSTPONED(w!)" "COMPLETED(c!)" "CANCELED(k@)")))
+    (setq org-todo-keywords
+          '((sequence "TODO(t)" "|" "DONE(d!)")
+                                          ;(sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")
+                                          ; Bugs
+            (sequence "TRIAGE(T)" "DIAGNOSE(D)" "IN WORK(I)" "WAIT(W)" "|" "FIXED(F!)" "VERIFY(V)" "CLOSED(C!)")
+                                          ; Tasks
+            (sequence "PROPOSAL(z)" "BACKLOG(b)" "ON DECK(o)" "PLAN(p)" "IN PROGRESS(i)" "ON HOLD(h)" "IMPLEMENTED(m)" "REVIEW(v)" "INTEGRATED(g)" "|" "POSTPONED(w@)" "REJECTED(j!)" "COMPLETED(c!)" "CANCELED(k@)"))
+                                          ;  
+          ;;(sequence "BACKLOG(b)" "ASSIGNED(a)" "HOLD(h)" "ON DECK(o)" "PLAN(p)" "IN PROGRESS(i)" "IMPLEMENTED(m)" "INTEGRATED(g)" "REVIEW(v)" "|" "POSTPONED(w!)" "REJECTED(j!)" "COMPLETED(c!)" "CANCELED(k@)"))
+          )
 
-      (setq org-refile-targets
-            '(("archive.org" :maxlevel . 1)
-              ("tasks.org" :maxlevel . 1)))
+    (setq org-refile-targets
+          '(("task-archive.org" :maxlevel . 1)
+            ("tasks.org" :maxlevel . 1)
+            ("todo.org" :maxlevel . 1)))
 
-      ;; Save Org buffers after refiling!
-      (advice-add 'org-refile :after 'org-save-all-org-buffers)
+    ;; Save Org buffers after refiling!
+    (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-      (setq org-tag-alist
-            '((:startgroup)
-                                            ; Put mutually exclusive tags here
-              (:endgroup)
-              ("@errand" . ?E)
-              ("@home" . ?H)
-              ("@work" . ?W)
-              ("agenda" . ?a)
-              ("planning" . ?p)
-              ("publish" . ?P)
-              ("batch" . ?b)
-              ("note" . ?n)
-              ("idea" . ?i)))
+    (setq org-tag-alist
+          '((:startgroup)
+                                          ; Put mutually exclusive tags here
+            (:endgroup)
+            ("@errand" . ?E)
+            ("@home" . ?H)
+            ("@work" . ?W)
+            ("aussie" . ?g)
+            ("agenda" . ?a)
+            ("planning" . ?p)
+            ("publish" . ?P)
+            ("batch" . ?b)
+            ("note" . ?n)
+            ("idea" . ?i)))
 
-      ;; Configure custom agenda views
-      (setq org-agenda-custom-commands
-            '(("d" "Dashboard"
-               ((agenda "" ((org-deadline-warning-days 7)))
-                (todo "NEXT"
-                      ((org-agenda-overriding-header "Next Tasks"))) 
-               (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+    ;; Configure columns to display
+    (setq org-columns-default-format
+          "%3PRIORITY %DEADLINE %TODO %TAGS %50ITEM")
 
-              ("n" "Next Tasks"
-               ((todo "NEXT"
-                      ((org-agenda-overriding-header "Next Tasks")))))
+    ;; Configure custom agenda views
+    (setq org-agenda-custom-commands
+          '(("d" "Dashboard"
+             ((agenda "" ((org-deadline-warning-days 100)))
+              (todo "IN PROGRESS|IN WORK" ((org-agenda-overriding-header "Active Projects")))
+              (todo "ON DECK|TRIAGE|DIAGNOSE" ((org-agenda-overriding-header "Next Tasks")))))
 
-              ("W" "Work Tasks" tags-todo "+work-email")
+            ("D" "Deadlines"
+             ((tags "DEADLINE>=\"<today>\"&DEADLINE<\"<+99d>\""
+                    ((org-agenda-entry-types '(:deadline))
+                     (org-agenda-overriding-header "This Season")
+                     (org-agenda-sorting-strategy '(priority-down))))
+              (tags "DEADLINE>=\"<+99d>\"&DEADLINE<\"<+189d>\""
+                    ((org-agenda-entry-types '(:deadline))
+                     (org-agenda-overriding-header "Next Season")
+                     (org-agenda-sorting-strategy '(priority-down)))))
+             nil
+             ("~/dev/notes/exported/deadline_next_season.txt"))
 
-              ;; Low-effort next actions
-              ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-               ((org-agenda-overriding-header "Low Effort Tasks")
-                (org-agenda-max-todos 20)
-                (org-agenda-files org-agenda-files)))
+            ("R" "Season Review"
+             ((agenda ""
+                      ((org-agenda-show-all-dates t)
+                       (org-agenda-start-with-log-mode t)
+                       (org-agenda-start-with-clockreport-mode t)
+                       (org-agenda-archives-mode t)
+                       ;; I don't care if an entry was archived
+                       (org-agenda-hide-tags-regexp
+                        (concat org-agenda-hide-tags-regexp
+                                "\\|ARCHIVE"))
+                       (org-agenda-start-day "-90d")
+                       (org-agenda-span 90) ;; (org-agenda-span 'week)
+                       (org-agenda-start-on-weekday 0)
+                       (org-agenda-overriding-header "Season in Review")))))
 
-              ("w" "Workflow Status"
-               ((todo "WAIT"
-                      ((org-agenda-overriding-header "Waiting on External")
-                       (org-agenda-files org-agenda-files)))
-                (todo "REVIEW"
-                      ((org-agenda-overriding-header "In Review")
-                       (org-agenda-files org-agenda-files)))
-                (todo "PLAN"
-                      ((org-agenda-overriding-header "In Planning")
-                       (org-agenda-todo-list-sublevels nil)
-                       (org-agenda-files org-agenda-files)))
-                (todo "BACKLOG"
-                      ((org-agenda-overriding-header "Project Backlog")
-                       (org-agenda-todo-list-sublevels nil)
-                       (org-agenda-files org-agenda-files)))
-                (todo "READY"
-                      ((org-agenda-overriding-header "Ready for Work")
-                       (org-agenda-files org-agenda-files)))
-                (todo "ACTIVE"
-                      ((org-agenda-overriding-header "Active Projects")
-                       (org-agenda-files org-agenda-files)))
-                (todo "COMPLETED"
-                      ((org-agenda-overriding-header "Completed Projects")
-                       (org-agenda-files org-agenda-files)))
-                (todo "CANC"
-                      ((org-agenda-overriding-header "Cancelled Projects")
-                       (org-agenda-files org-agenda-files)))))))
+                                          ;("r" "Weekly Review"
+                                          ; ((agenda ""
+                                          ;        ((org-agenda-overriding-header "Weekly Review:")
+                                          ;        (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo 'done))
+                                          ;        (org-agenda-skip-scheduled-if-done nil)
+                                          ;        (org-agenda-skip-timestamp-if-done nil)                      
+                                          ;        (org-agenda-span 7)
+                                          ;        (org-agenda-use-time-grid nil)
+                                          ;        (setq org-agenda-show-all-dates nil)))))
 
-      (setq org-capture-templates
-            `(("t" "Tasks / Projects")
-              ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
-               "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+            ("r" "Weekly Review"
+             ((agenda "+journal"
+                      ((org-agenda-show-all-dates t)
+                       (org-agenda-start-with-log-mode t)
+                       (org-agenda-start-with-clockreport-mode t)
+                       (org-agenda-archives-mode t)
+                       ;; I don't care if an entry was archived
+                       (org-agenda-hide-tags-regexp
+                        (concat org-agenda-hide-tags-regexp
+                                "\\|ARCHIVE"))
+                       (org-agenda-start-day "-14d")
+                       (org-agenda-span 14) ;; (org-agenda-span 'week)
+                       (org-agenda-start-on-weekday 0)
+                       (org-agenda-overriding-header "Week in Review")))))
 
-              ("j" "Journal Entries")
-              ("jj" "Journal" entry
-               (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-               "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-               ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-               :clock-in :clock-resume
-               :empty-lines 1)
-              ("jm" "Meeting" entry
-               (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-               "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-               :clock-in :clock-resume
-               :empty-lines 1)
 
-              ("w" "Workflows")
-              ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
-               "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+            ("n" "Next Tasks"
+             ((todo "ON DECK|PLAN|DIAGNOSE|TRIAGE"
+                    ((org-agenda-overriding-header "Next Tasks")))))
 
-              ("m" "Metrics Capture")
-              ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
-               "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+            ("G" "Aussie Greg" tags-todo "+aussie")
+          
+            ("u" "Untagged Tasks" tags-todo "-{.*}")
 
-      (define-key global-map (kbd "C-c j")
-        (lambda () (interactive) (org-capture nil "jj")))
+            ;; ("W" "Work Tasks" tags-todo "+work-email")
 
-      (efs/org-font-setup)
+            ;; Low-effort next actions
+            ("x" "Low Effort Tasks" tags-todo "+TODO=\"ON DECK|TRIAGE|DIAGNOSE\"+Effort<15&+Effort>0"
+             ((org-agenda-overriding-header "Low Effort Tasks")
+              (org-agenda-max-todos 20)
+              (org-agenda-files org-agenda-files)))
 
-                                            ; Add ODT export (this was already possible, but adding for docx support)
-      (require 'ox-odt)
+            ("w" "Workflow Status"
+             ((todo "WAIT|ON HOLD"
+                    ((org-agenda-overriding-header "Waiting on External")
+                     (org-agenda-files org-agenda-files)))
+              (todo "TRIAGE"
+                    ((org-agenda-overriding-header "Needs Triage")
+                     (org-agenda-files org-agenda-files)))
+              (todo "INTEGRATED|VERIFY"
+                    ((org-agenda-overriding-header "In Testing")
+                     (org-agenda-files org-agenda-files)))
+              (todo "REVIEW"
+                    ((org-agenda-overriding-header "In Review")
+                     (org-agenda-files org-agenda-files)))
+              (todo "IMPLEMENTED"
+                    ((org-agenda-overriding-header "Local Testing")
+                     (org-agenda-files org-agenda-files)))
+              (todo "IN PROGRESS|IN WORK"
+                    ((org-agenda-overriding-header "In Progress")
+                     (org-agenda-files org-agenda-files)))
+              (todo "PLAN|ON DECK|DIAGNOSE"
+                    ((org-agenda-overriding-header "In Preparation")
+                     (org-agenda-todo-list-sublevels nil)
+                     (org-agenda-files org-agenda-files)))
+              (todo "BACKLOG|TODO"
+                    ((org-agenda-overriding-header "Project Backlog")
+                     (org-agenda-todo-list-sublevels nil)
+                     (org-agenda-files org-agenda-files)))
+              (todo "CLOSED|COMPLETED"
+                    ((org-agenda-overriding-header "Completed Projects")
+                     (org-agenda-files org-agenda-files)))
+              (todo "POSTPONED"
+                    ((org-agenda-overriding-header "Postponed Projects")
+                     (org-agenda-files org-agenda-files)))
+              (todo "CANCELED|REJECTED"
+                    ((org-agenda-overriding-header "Cancelled Projects")
+                     (org-agenda-files org-agenda-files)))))))
 
-                                            ; Use docx as the default ODT export format (good for Google-docs)
-      (setq org-odt-preferred-output-format "docx"))
+                                          ; C-c o
+    (setq org-capture-templates
+          `(("t" "Tasks / Projects")
+            ("tt" "Task" entry (file+olp "~/dev/notes/tasks.org" "Inbox")
+             "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+            ("ts" "Clocked Entry Substask" entry (clock)
+             "* TODO %?\n %U\n %a\n %i" :empty-lines 1)
+
+            ("j" "Journal Entries")
+            ("jj" "Journal" entry
+             (file+olp+datetree "~/dev/notes/journal.org")
+             "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+             ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+             :clock-in :clock-resume
+             :empty-lines 1)
+            ("jm" "Meeting" entry
+             (file+olp+datetree "~/dev/notes/journal.org")
+             "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+             :clock-in :clock-resume
+             :empty-lines 1)
+
+            ("w" "Workflows")
+            ("we" "Checking Email" entry (file+olp+datetree "~/dev/notes/journal.org")
+             "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+            ("m" "Metrics Capture")
+            ("mw" "Weight" table-line (file+headline "~/dev/notes/metrics.org" "Weight")
+             "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+
+    (define-key global-map (kbd "C-c o")
+                (lambda () (interactive) (org-capture)))
+
+    (define-key global-map (kbd "C-c j")
+                (lambda () (interactive) (org-capture nil "jj")))
+
+    (efs/org-font-setup)
+
+                                          ; Add ODT export (this was already possible, but adding for docx support)
+    (require 'ox-odt)
+
+                                          ; Use docx as the default ODT export format (good for Google-docs)
+    (setq org-odt-preferred-output-format "docx"))
 
 #+end_src
 
 #+RESULTS:
-: prev-window
+: org-agenda
 
 *** Nicer Heading Bullets
 
@@ -839,12 +951,12 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.  This is really a matter of personal preference so you can remove the block below if you don't like the behavior.
 
-#+begin_src 
+#+begin_src emacs-lisp
 
   (defun efs/org-mode-visual-fill ()
     (setq visual-fill-column-width 120
           visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
+    (visual-fill-column-mode t))
 
   (use-package visual-fill-column
     :hook (org-mode . efs/org-mode-visual-fill))
@@ -908,22 +1020,146 @@ Support for exporting org-mode files to markdown is included with the org packag
 
 #+end_src
 
+*** LaTeX Setup
+
+Using LaTeX in org-mode can be done by including the following org-headers:
+
+**** LaTeX Setup File
+Creating well-formatted LaTeX documents using the org-mode structure can require a lot of LaTeX-specific headers and customization.  Including this SETUPFILE gives me a consistent and simple configuration for use across org files.
+
+To use this configuration, include a SETUPFILE org header instead of LATEX_CLASS, LATEX_CLASS_OPTIONS, and OPTIONS.
+
+#+begin_src org :notangle :tangle no
+  #+SETUPFILE: latex-standard.setup
+#+end_src
+
+This section contains the contents of the SETUPFILE for LaTeX specific org-babel processing.  This configuration was taken from and inspired from https://jakebox.github.io/youtube/org_latex_video.html 
+
+Because this include org-specific code, edit this using ~C-c C-'~.
+
+#+begin_src text :tangle ./.emacs.d/latex-standard.setup
+  ,#+LaTeX_CLASS: org-plain-latex
+  ,#+LaTeX_CLASS_OPTIONS: [letterpaper, 11pt]
+  ,#+LATEX_HEADER: \usepackage{lmodern} % Ensures we have the right font
+
+  ,#+LATEX_HEADER: \usepackage[T1]{fontenc}
+  ,#+LATEX_HEADER: \usepackage[AUTO]{inputenc}
+  ,#+LATEX_HEADER: \usepackage{graphicx}
+  ,#+LATEX_HEADER: \usepackage{amsmath, amsthm, amssymb}
+  ,#+LATEX_HEADER: \usepackage[table, xcdraw]{xcolor}
+
+  % Colorizing links in a nicer way.
+  ,#+LATEX_HEADER: \definecolor{bblue}{HTML}{0645AD}
+  ,#+LATEX_HEADER: \usepackage[colorlinks]{hyperref}
+  ,#+LATEX_HEADER: \hypersetup{colorlinks, linkcolor=blue, urlcolor=bblue}
+
+  % Moving up the title.
+  ,#+LATEX_HEADER: \usepackage{titling}
+  ,#+LATEX_HEADER: \setlength{\droptitle}{-6em}
+
+  ,#+LATEX_HEADER: \setlength{\parindent}{0pt}
+  ,#+LATEX_HEADER: \setlength{\parskip}{1em}
+  ,#+LATEX_HEADER: \usepackage[stretch=10]{microtype}
+  ,#+LATEX_HEADER: \usepackage{hyphenat}
+  ,#+LATEX_HEADER: \usepackage{ragged2e}
+  ,#+LATEX_HEADER: \usepackage{subfig} % Subfigures (not needed in Org I think)
+  ,#+LATEX_HEADER: \usepackage{hyperref} % Links
+  ,#+LATEX_HEADER: \usepackage{listings} % Code highlighting
+  % Disables flush alighment on the right side. Personal preference.
+  # #+LATEX_HEADER: \RaggedRight
+
+  % Page geometry
+  ,#+LATEX_HEADER: \usepackage[top=1in, bottom=1.25in, left=1.55in, right=1.55in]{geometry}
+
+  % Line spacing
+  ,#+LATEX_HEADER: \renewcommand{\baselinestretch}{1.15}
+
+  % Page numbering - this disables it
+  # #+LATEX_HEADER: \pagenumbering{gobble}
+
+  % Spacing, titling, text setting.
+  ,#+LATEX_HEADER: \usepackage[explicit]{titlesec}
+
+  % Title customization
+  ,#+LATEX_HEADER: \pretitle{\begin{center}\fontsize{20pt}{20pt}\selectfont}
+  ,#+LATEX_HEADER: \posttitle{\par\end{center}}
+  ,#+LATEX_HEADER: \preauthor{\begin{center}\vspace{-6bp}\fontsize{14pt}{14pt}\selectfont}
+  ,#+LATEX_HEADER: \postauthor{\par\end{center}\vspace{-25bp}}
+
+  ,#+LATEX_HEADER: \predate{\begin{center}\fontsize{12pt}{12pt}\selectfont}
+  ,#+LATEX_HEADER: \postdate{\par\end{center}\vspace{0em}}
+
+
+  % Section/subsection headings:
+
+  %Section
+  ,#+LATEX_HEADER: \titlespacing\section{0pt}{5pt}{5pt} % left margin, space before section header, space after section header
+
+  %Subsection
+  ,#+LATEX_HEADER: \titlespacing\subsection{0pt}{5pt}{-2pt} % left margin, space before subsection header, space after subsection header
+
+  %Subsubsection
+  ,#+LATEX_HEADER: \titlespacing\subsubsection{0pt}{5pt}{-2pt} % left margin, space before subsection header, space after subsection header 
+
+  % List spacing
+  ,#+LATEX_HEADER: \usepackage{enumitem}
+  ,#+LATEX_HEADER: \setlist{itemsep=-2pt} % or \setlist{noitemsep} to leave space around whole list
+
+
+  # %Section
+  # #+LATEX_HEADER: \titleformat{\section} {\Large}{\thesection}{1em}{\textbf{#1}} % Section header formatting
+  # #+LATEX_HEADER: \titlespacing\section{0pt}{5pt}{-5pt} % left margin, space before section header, space after section header
+
+  # %Subsection
+  # #+LATEX_HEADER: \titleformat{\subsection} {\large}{\thesubsection}{1em}{\textbf{#1}}
+  \titlespacing\subsection{0pt}{5pt}{-5pt} % left margin, space before subsection header, space after subsection header
+
+  # %Subsubsection
+  # #+LATEX_HEADER: \titleformat{\subsubsection} {\large}{\thesubsubsection}{1em}{#1}
+  \titlespacing\subsubsection{0pt}{5pt}{-5pt} % left margin, space before subsection header, space after subsection header
+
+  %Mathematics
+  ,#+LATEX_HEADER: \newcommand*\dif{\mathop{}\!\mathrm{d}}
+  ,#+LATEX_HEADER: \newcommand*\Dif[1]{\mathop{}\!\mathrm{d^#1}}
+  ,#+LATEX_HEADER: \newcommand{\vect}[1]{\boldsymbol{#1}}
+
+#+end_src
+
+**** LaTeX without Setup File
+#+begin_src emacs-lisp
+    (with-eval-after-load 'ox-latex
+      (add-to-list 'org-latex-classes
+                   '("org-plain-latex"
+                     "\\documentclass{article}
+               [NO-DEFAULT-PACKAGES]
+               [PACKAGES]
+               [EXTRA]"
+                     ("\\section{%s}" . "\\section*{%s}")
+                     ("\\subsection{%s}" . "\\subsection*{%s}")
+                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+#+end_src
+
+#+RESULTS:
+| org-plain-latex | \documentclass{article} |
+
 *** Other Languages
 
 #+begin_src emacs-lisp
   (org-babel-do-load-languages
-     'org-babel-load-languages
-     '(
-       (C . t)
-       (emacs-lisp . t)
-       (plantuml . t)
-       (python . t)
-       (shell . t)))
+   'org-babel-load-languages
+   '(
+     (C . t)
+     (emacs-lisp . t)
+     (plantuml . t)
+     (python . t)
+     (shell . t)
+     (latex . t)))
 
                                           ;     (arduino . t)
                                           ;     (cpp . t)
                                           ;     (csharp . t)
-                                          ;     (latex . t)
                                           ;     (javascript . t)
                                           ;     (matlab . t)
 
@@ -934,14 +1170,14 @@ Support for exporting org-mode files to markdown is included with the org packag
 
 [[https://github.com/nobiot/org-transclusion?tab=readme-ov-file][org-transclusion]] is a dynamic and powerful inclusion framework that allows multiple files to share the same content without multiple copies.
 
-#+begin_src emacs-lisp :no-tangle: :tangle no
+#+begin_src emacs-lisp
 
   ;; org-transclusion
   (use-package org-transclusion
   :after org
   :config
     (setq org-transclusion-add-all-on-activate t)
-    (setq org-transclusion-exclude-elements (property-drawer keyword))
+    ;; (setq org-transclusion-exclude-elements (property-drawer keyword))
     (define-key org-mode-map (kbd "<f12>") #'org-transclusion-add)
     (define-key org-mode-map (kbd "C-<f12>") #'org-transclusion-mode)
 
@@ -1341,6 +1577,10 @@ Taken from https://www.draketo.de/software/emacs-javascript.html
     :config
     (global-discover-mode 1))
 
+  (use-package prettier-js
+    :config
+    (add-hook 'js2-mode-hook 'prettier-js-mode))
+
   ;; ido-preview
   ;; (use-package ido-preview ;; no need to ensure: it is part of emacs
   ;;   :config
@@ -1488,7 +1728,7 @@ The sandbox is my area to try out new emacs packages or lisp snippets.
 ;;       of lines that point moves in pixel-scroll.el ruins large image
 ;;       scrolling. So unfortunately I think we'll just have to live with
 ;;       this.
-(pixel-scroll-mode)
+(pixel-scroll-precision-mode 't)
 (setq pixel-dead-time 0) ; Never go back to the old scrolling behaviour.
 (setq pixel-resolution-fine-flag 't) ; Scroll by number of pixels instead of lines (t = frame-char-height pixels).
 (setq mouse-wheel-scroll-amount '(1)) ; Distance in pixel-resolution to scroll each mouse wheel event.
